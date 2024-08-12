@@ -1,48 +1,58 @@
 package com.example.gymrat.service;
 
-import com.example.gymrat.DTO.User.UserCreateDTO;
+import com.example.gymrat.DTO.User.auth.AuthenticationRequest;
+import com.example.gymrat.DTO.User.auth.RegisterRequest;
+import com.example.gymrat.auth.AuthenticationResponse;
+import com.example.gymrat.config.JwtService;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
-import com.example.gymrat.exception.user.UserNotFoundException;
 import com.example.gymrat.mapper.UserMapper;
 import com.example.gymrat.model.User;
 import com.example.gymrat.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
-    }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    public User saveUser(UserCreateDTO userCreateDTO) {
-        System.out.println("essa");
-        if (userRepository.findByEmail(userCreateDTO.email()).isPresent()) {
-            throw new UserAlreadyExistsException("User with email " + userCreateDTO.email() + " already exists");
+    public AuthenticationResponse register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + request.email() + " already exists");
         }
-        if (userRepository.findByUsername(userCreateDTO.username()).isPresent()) {
-            throw new UserAlreadyExistsException("User with username " + userCreateDTO.username() + " already exists");
+        if (userRepository.findByNickname(request.nickname()).isPresent()) {
+            throw new UserAlreadyExistsException("User with nickname " + request.nickname() + " already exists");
         }
-        User user = UserMapper.toEntity(userCreateDTO);
-        user.setPassword(passwordEncoder.encode(userCreateDTO.password()));
-        return userRepository.save(user);
+        User user = UserMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(request.password()));
+        userRepository.save(user);
+
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.email(),
+                        request.password()
+                )
+        );
+        var user = userRepository.findByEmail(request.email()).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 
 

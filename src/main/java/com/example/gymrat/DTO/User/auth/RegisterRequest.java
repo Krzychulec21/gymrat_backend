@@ -1,12 +1,14 @@
-package com.example.gymrat.DTO.User;
+package com.example.gymrat.DTO.User.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.UniqueElements;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record UserCreateDTO(
-
+public record RegisterRequest(
         @NotBlank(message = "First name is required")
         String firstName,
         @NotBlank(message = "Last name is required")
@@ -19,5 +21,5 @@ public record UserCreateDTO(
         @NotBlank(message = "Password is required")
         @Size(min = 8, message = "Password should be at least 8 characters long")
         String password
-        )
+)
 {}
