@@ -41,6 +41,11 @@ public class UserService {
                 .build();
     }
 
+    public User getUserByNickname(String nickname) {
+
+        return userRepository.findByNickname(nickname).orElseThrow();
+    }
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -53,6 +58,10 @@ public class UserService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow();
     }
 
 

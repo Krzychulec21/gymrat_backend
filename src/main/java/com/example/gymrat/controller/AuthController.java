@@ -10,6 +10,8 @@ import com.example.gymrat.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +30,18 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(userService.authenticate(request));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<User> getUser() {
+        // Pobierz aktualnie uwierzytelnionego użytkownika
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Zakładam, że masz metodę do pobierania użytkownika na podstawie emaila (lub innego identyfikatora)
+        String userEmail = userDetails.getUsername(); // Lub getEmail(), jeśli masz taką metodę
+        User user = userService.findUserByEmail(userEmail);
+
+        return ResponseEntity.ok(user);
     }
 
 }
