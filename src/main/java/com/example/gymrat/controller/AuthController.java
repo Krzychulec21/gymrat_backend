@@ -29,19 +29,10 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody AuthenticationRequest request) {
+        System.out.println("Logowanie");
         return ResponseEntity.ok(userService.authenticate(request));
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<User> getUser() {
-        // Pobierz aktualnie uwierzytelnionego użytkownika
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Zakładam, że masz metodę do pobierania użytkownika na podstawie emaila (lub innego identyfikatora)
-        String userEmail = userDetails.getUsername(); // Lub getEmail(), jeśli masz taką metodę
-        User user = userService.findUserByEmail(userEmail);
-
-        return ResponseEntity.ok(user);
-    }
 
 }

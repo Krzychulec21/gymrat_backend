@@ -47,14 +47,18 @@ public class UserService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        System.out.println("poczatek metody authenticate");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
                         request.password()
                 )
         );
+        System.out.println("Przed userem");
         var user = userRepository.findByEmail(request.email()).orElseThrow();
+        System.out.println("Po userem");
         var jwtToken = jwtService.generateToken(user);
+        System.out.println("generowanie tokena");
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
