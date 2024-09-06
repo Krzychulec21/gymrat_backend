@@ -1,4 +1,4 @@
-package com.example.gymrat.DTO.User.auth;
+package com.example.gymrat.DTO.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

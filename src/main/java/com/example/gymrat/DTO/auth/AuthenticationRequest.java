@@ -1,4 +1,4 @@
-package com.example.gymrat.DTO.User.auth;
+package com.example.gymrat.DTO.auth;
 
 public record AuthenticationRequest (
         String email,

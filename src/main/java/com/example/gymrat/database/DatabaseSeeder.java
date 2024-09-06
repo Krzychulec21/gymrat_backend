@@ -1,7 +1,6 @@
 package com.example.gymrat.database;
 
-import com.example.gymrat.DTO.User.auth.RegisterRequest;
-import com.example.gymrat.model.User;
+import com.example.gymrat.DTO.auth.RegisterRequest;
 import com.example.gymrat.repository.UserRepository;
 import com.example.gymrat.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,9 @@ public class DatabaseSeeder implements ApplicationRunner {
     }
 
     private void seedUsers() {
-        RegisterRequest user = new RegisterRequest("Jan", "Kowalski", "kowalczyk", "kowalski@wp.pl", "password");
-        userService.register(user);
+        RegisterRequest user1 = new RegisterRequest("Jan", "Kowalski", "kowalczyk", "kowalski@wp.pl", "password");
+        RegisterRequest user2 = new RegisterRequest("Michal", "Barylka", "essunia", "nowak@wp.pl", "password");
+        userService.register(user1);
+        userService.register(user2);
     }
 }

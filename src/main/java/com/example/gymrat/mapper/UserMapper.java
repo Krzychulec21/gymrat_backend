@@ -1,6 +1,6 @@
 package com.example.gymrat.mapper;
 
-import com.example.gymrat.DTO.User.auth.RegisterRequest;
+import com.example.gymrat.DTO.auth.RegisterRequest;
 import com.example.gymrat.model.AuthProvider;
 import com.example.gymrat.model.Role;
 import com.example.gymrat.model.User;

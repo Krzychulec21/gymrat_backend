@@ -1,19 +1,23 @@
 package com.example.gymrat.service;
 
-import com.example.gymrat.DTO.User.auth.AuthenticationRequest;
-import com.example.gymrat.DTO.User.auth.RegisterRequest;
+import com.example.gymrat.DTO.auth.AuthenticationRequest;
+import com.example.gymrat.DTO.auth.RegisterRequest;
 import com.example.gymrat.auth.AuthenticationResponse;
 import com.example.gymrat.config.JwtService;
+import com.example.gymrat.exception.auth.InvalidCredentialsException;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
+import com.example.gymrat.exception.user.UserNotFoundException;
 import com.example.gymrat.mapper.UserMapper;
 import com.example.gymrat.model.User;
 import com.example.gymrat.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,31 +39,28 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
-    public User getUserByNickname(String nickname) {
-
-        return userRepository.findByNickname(nickname).orElseThrow();
-    }
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        System.out.println("poczatek metody authenticate");
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
-        System.out.println("Przed userem");
-        var user = userRepository.findByEmail(request.email()).orElseThrow();
-        System.out.println("Po userem");
-        var jwtToken = jwtService.generateToken(user);
-        System.out.println("generowanie tokena");
-        return AuthenticationResponse.builder()
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.email(),
+                            request.password()
+                    )
+            );
+        } catch (AuthenticationException e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        String jwtToken = jwtService.generateToken(user);
+
+        return  AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
@@ -69,8 +70,7 @@ public class UserService {
     }
 
 
-
-
-
-
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }
