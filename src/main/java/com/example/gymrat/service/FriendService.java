@@ -27,7 +27,7 @@ public class FriendService {
         User sender = userRepository.findByEmail(senderEmail).orElseThrow();
         User receiver = userRepository.findByEmail(recipientEmail).orElseThrow();
 
-        Optional<FriendRequest> existingRequest = friendRequestRepository.findBySenderAndReceiver(sender.getEmail(), receiver.getEmail());
+        Optional<FriendRequest> existingRequest = friendRequestRepository.findBySender_EmailAndReceiver_Email(sender.getEmail(), receiver.getEmail());
 
         if (existingRequest.isPresent()) {
             FriendRequest request = existingRequest.get();
@@ -72,7 +72,7 @@ public class FriendService {
 
     public List<FriendRequest> getPendingRequests(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
-        return friendRequestRepository.findByReceiverAndStatus(user.getEmail(), RequestStatus.PENDING);
+        return friendRequestRepository.findByReceiver_EmailAndStatus(user.getEmail(), RequestStatus.PENDING);
     }
 
     @Transactional

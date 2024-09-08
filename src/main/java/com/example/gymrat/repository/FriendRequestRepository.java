@@ -15,10 +15,10 @@ import java.util.Optional;
 
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
-    List<FriendRequest> findByReceiverAndStatus(String receiver, RequestStatus status);
-    List<FriendRequest> findBySenderAndStatus(String senderEmail, RequestStatus status);
+    List<FriendRequest> findByReceiver_EmailAndStatus(String receiverEmail, RequestStatus status);
+    List<FriendRequest> findBySender_EmailAndStatus(String senderEmail, RequestStatus status);
 
-    Optional<FriendRequest> findBySenderAndReceiver(String senderEmail, String receiverEmail);
+    Optional<FriendRequest> findBySender_EmailAndReceiver_Email(String senderEmail, String receiverEmail);
 
     @Modifying
     @Transactional
