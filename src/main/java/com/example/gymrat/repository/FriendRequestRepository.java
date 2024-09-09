@@ -1,5 +1,6 @@
 package com.example.gymrat.repository;
 
+import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.model.FriendRequest;
 import com.example.gymrat.model.RequestStatus;
 import com.example.gymrat.model.User;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
-    List<FriendRequest> findByReceiver_EmailAndStatus(String receiverEmail, RequestStatus status);
+    List<PendingFriendRequestDTO> findByReceiver_EmailAndStatus(String receiverEmail, RequestStatus status);
     List<FriendRequest> findBySender_EmailAndStatus(String senderEmail, RequestStatus status);
 
     Optional<FriendRequest> findBySender_EmailAndReceiver_Email(String senderEmail, String receiverEmail);

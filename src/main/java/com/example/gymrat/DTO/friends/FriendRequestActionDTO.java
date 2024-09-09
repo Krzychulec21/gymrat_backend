@@ -1,6 +1,6 @@
 package com.example.gymrat.DTO.friends;
 
-public record FriendRequestDTO(
+public record FriendRequestActionDTO(
         Long requestId,
         boolean accepted
 ) {}

@@ -1,5 +1,6 @@
 package com.example.gymrat.service;
 
+import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.UserDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
@@ -70,7 +71,7 @@ public class FriendService {
     }
 
 
-    public List<FriendRequest> getPendingRequests(String email) {
+    public List<PendingFriendRequestDTO> getPendingRequests(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         return friendRequestRepository.findByReceiver_EmailAndStatus(user.getEmail(), RequestStatus.PENDING);
     }

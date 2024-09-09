@@ -1,6 +1,7 @@
 package com.example.gymrat.controller;
 
-import com.example.gymrat.DTO.friends.FriendRequestDTO;
+import com.example.gymrat.DTO.friends.FriendRequestActionDTO;
+import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.EmailDTO;
 import com.example.gymrat.DTO.user.UserDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
@@ -28,8 +29,8 @@ public class FriendController {
     }
 
     @PostMapping("/respond-request")
-    public ResponseEntity<Void> respondToFriendRequest(@RequestBody FriendRequestDTO friendRequestDTO) {
-        friendService.respondToFriendRequest(friendRequestDTO.requestId(), friendRequestDTO.accepted());
+    public ResponseEntity<Void> respondToFriendRequest(@RequestBody FriendRequestActionDTO friendRequestActionDTO) {
+        friendService.respondToFriendRequest(friendRequestActionDTO.requestId(), friendRequestActionDTO.accepted());
         return ResponseEntity.ok().build();
     }
 
@@ -41,9 +42,9 @@ public class FriendController {
     }
 
     @GetMapping("/pending-requests")
-    public ResponseEntity<List<FriendRequest>> getPendingRequests() {
+    public ResponseEntity<List<PendingFriendRequestDTO>> getPendingRequests() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<FriendRequest> requests = friendService.getPendingRequests(email);
+        List<PendingFriendRequestDTO> requests = friendService.getPendingRequests(email);
         return ResponseEntity.ok(requests);
     }
 
