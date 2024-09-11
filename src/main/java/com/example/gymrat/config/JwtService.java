@@ -1,5 +1,6 @@
 package com.example.gymrat.config;
 
+import com.example.gymrat.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -44,18 +45,20 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        System.out.println("wygenerowano token");
       return generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
-    ) {
+    )
+    {
+        User user = (User) userDetails;
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
+                .claim("id", user.getId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)

@@ -73,4 +73,9 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public Long getId(String email) {
+        User user =  userRepository.findByEmail(email).orElseThrow();
+        return user.getId();
+    }
 }

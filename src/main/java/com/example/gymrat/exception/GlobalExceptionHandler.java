@@ -1,6 +1,7 @@
 package com.example.gymrat.exception;
 
 import com.example.gymrat.exception.auth.InvalidCredentialsException;
+import com.example.gymrat.exception.chat.ChatRoomNotFoundException;
 import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
 import com.example.gymrat.exception.user.UserNotFoundException;
@@ -19,13 +20,13 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -38,16 +39,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<String> handleInvalidCredentialsException(InvalidCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(FriendRequestAlreadyExistsException.class)
     public ResponseEntity<String> handleFriendRequestAlreadyExistsException(FriendRequestAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ChatRoomNotFoundException.class)
+    public ResponseEntity<String> handleChatRoomNotFoundException(ChatRoomNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
