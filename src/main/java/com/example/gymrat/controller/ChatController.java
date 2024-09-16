@@ -25,12 +25,11 @@ import java.util.stream.Collectors;
 public class ChatController {
 
     private final ChatService chatService;
+
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(ChatMessageDTO chatMessageDTO) {
         chatService.sendMessage(chatMessageDTO);
     }
-
-
 
     @GetMapping("/chat/history/{roomId}")
     public ResponseEntity<List<ChatMessageDTO>> getChatHistory(@PathVariable Long roomId) {
@@ -38,15 +37,10 @@ public class ChatController {
     }
 
     @GetMapping("/chat/room")
-    public ResponseEntity<Long> getOrCreateChatRoom(
+    public ResponseEntity<Long> getChatRoom(
             @RequestParam Long senderId,
             @RequestParam Long receiverId) {
-        Long chatRoomId = chatService.getChatRoomId(senderId, receiverId).orElseGet(() -> {
-            ChatRoom newChatRoom = chatService.createChatRoom(senderId, receiverId);
-            return newChatRoom.getId();
-        });
-
-        return ResponseEntity.ok(chatRoomId);
+        return ResponseEntity.ok(chatService.getChatRoomId(senderId,receiverId));
     }
 
 

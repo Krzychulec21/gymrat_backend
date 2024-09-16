@@ -54,8 +54,18 @@ public class ChatService {
 
         return messageRepository.save(message);
     }
-    public Optional<Long> getChatRoomId(Long senderId, Long receiverId) {
-        return chatRoomRepository.findByUsers(senderId, receiverId).map(ChatRoom::getId);
+
+    public Long getChatRoomId(Long senderId, Long receiverId) {
+        return chatRoomRepository.findByUsers(senderId, receiverId).orElseGet(() -> {
+            User user1 = userRepository.findById(senderId).orElseThrow(() ->
+                    new UserNotFoundException("User with ID " + senderId + " not found"));
+            User user2 = userRepository.findById(receiverId).orElseThrow(() ->
+                    new UserNotFoundException("User with ID " + receiverId + " not found"));
+            ChatRoom newChatRoom = new ChatRoom();
+            newChatRoom.setUser1(user1);
+            newChatRoom.setUser2(user2);
+            return chatRoomRepository.save(newChatRoom);
+        }).getId();
     }
 
     public ChatRoom createChatRoom(Long senderId, Long receiverId) {

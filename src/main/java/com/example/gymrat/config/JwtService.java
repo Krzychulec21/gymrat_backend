@@ -1,6 +1,7 @@
 package com.example.gymrat.config;
 
 import com.example.gymrat.model.User;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "dasjndkjasdfnjsadkjfaskdbjasdkjasndkasndjaskdlk";
+    private final Dotenv dotenv = Dotenv.load();
+
+    private final String SECRET_KEY = dotenv.get("KEY");
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);

@@ -7,6 +7,7 @@ import com.example.gymrat.DTO.user.UserDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.model.FriendRequest;
 import com.example.gymrat.service.FriendService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,10 +17,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/friends")
+@AllArgsConstructor
 public class FriendController {
 
-    @Autowired
-    private FriendService friendService;
+    private final FriendService friendService;
 
     @PostMapping("/send-request")
     public ResponseEntity<Void> sendFriendRequest(@RequestBody EmailDTO receiverEmail) {

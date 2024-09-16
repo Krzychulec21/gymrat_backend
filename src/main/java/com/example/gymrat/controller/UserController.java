@@ -2,6 +2,7 @@ package com.example.gymrat.controller;
 
 import com.example.gymrat.model.User;
 import com.example.gymrat.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,11 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+
+    private final UserService userService;
 
     @GetMapping("")
     public ResponseEntity<User> getUser() {
@@ -35,15 +37,5 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-
-    @GetMapping("/email")
-    public ResponseEntity<Long> getId() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        String userEmail = userDetails.getUsername();
-        Long id = userService.getId(userEmail);
-        return ResponseEntity.ok(id);
-    }
-
 
 }

@@ -38,7 +38,7 @@ public class FriendServiceTest {
         when(userRepository.findByEmail(sender.getEmail())).thenReturn(Optional.of(sender));
         when(userRepository.findByEmail(receiver.getEmail())).thenReturn(Optional.of(receiver));
 
-        when(friendRequestRepository.findBySenderAndReceiver(sender.getEmail(),receiver.getEmail())).thenReturn(Optional.empty());
+        when(friendRequestRepository.findBySender_EmailAndReceiver_Email(sender.getEmail(),receiver.getEmail())).thenReturn(Optional.empty());
 
         friendService.sendFriendRequest(sender.getEmail(), receiver.getEmail());
 
@@ -56,7 +56,7 @@ public class FriendServiceTest {
         when(userRepository.findByEmail(sender.getEmail())).thenReturn(Optional.of(sender));
         when(userRepository.findByEmail(receiver.getEmail())).thenReturn(Optional.of(receiver));
 
-        when(friendRequestRepository.findBySenderAndReceiver(sender.getEmail(), receiver.getEmail())).thenReturn(Optional.of(new FriendRequest()));
+        when(friendRequestRepository.findBySender_EmailAndReceiver_Email(sender.getEmail(), receiver.getEmail())).thenReturn(Optional.of(new FriendRequest()));
 
         assertThrows(FriendRequestAlreadyExistsException.class, () -> {
             friendService.sendFriendRequest(sender.getEmail(),receiver.getEmail());
