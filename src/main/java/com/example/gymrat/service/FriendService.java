@@ -4,12 +4,12 @@ import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.UserDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
-import com.example.gymrat.model.FriendRequest;
-import com.example.gymrat.model.RequestStatus;
-import com.example.gymrat.model.User;
+import com.example.gymrat.model.*;
 import com.example.gymrat.repository.FriendRequestRepository;
+import com.example.gymrat.repository.NotificationRepository;
 import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ public class FriendService {
 
     private final FriendRequestRepository friendRequestRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public void sendFriendRequest(String senderEmail, String recipientEmail) {
         User sender = userRepository.findByEmail(senderEmail).orElseThrow();
@@ -44,6 +45,8 @@ public class FriendService {
             newRequest.setStatus(RequestStatus.PENDING);
             friendRequestRepository.save(newRequest);
         }
+
+        notificationService.sendNotification(receiver, "Nowe zaproszenie od "+ sender.getFirstName() +" " + sender.getLastName(), NotificationType.FRIEND_REQUEST);
     }
 
     public void respondToFriendRequest(Long requestId, boolean accepted) {
@@ -52,7 +55,6 @@ public class FriendService {
             request.setStatus(RequestStatus.ACCEPTED);
             User sender = request.getSender();
             User receiver = request.getReceiver();
-            ;
             sender.getFriends().add(receiver);
             receiver.getFriends().add(sender);
             userRepository.save(sender);
@@ -87,8 +89,7 @@ public class FriendService {
         userRepository.save(user);
         userRepository.save(friend);
 
-        friendRequestRepository.deleteBySenderAndReceiver(user, friend);
-        friendRequestRepository.deleteBySenderAndReceiver(friend, user);
+        friendRequestRepository.deleteAllBetweenUsers(user.getId(), friend.getId());
     }
 
     public List<UserWithRequestStatusDTO> getUsersWithRequestStatus(String currentUserEmail) {
@@ -111,6 +112,25 @@ public class FriendService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    public boolean isReceiverOfRequest(Long requestId) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        FriendRequest request = friendRequestRepository.findById(requestId).orElse(null);
+        if (request == null) {
+            return false;
+        }
+        return request.getReceiver().getEmail().equals(userEmail);
+    }
+
+    public boolean areFriends(String friendEmail) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        User friend = userRepository.findByEmail(friendEmail).orElse(null);
+        if (user == null || friend == null) {
+            return false;
+        }
+        return user.getFriends().contains(friend);
     }
 
 }

@@ -5,11 +5,10 @@ import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.EmailDTO;
 import com.example.gymrat.DTO.user.UserDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
-import com.example.gymrat.model.FriendRequest;
 import com.example.gymrat.service.FriendService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +29,7 @@ public class FriendController {
     }
 
     @PostMapping("/respond-request")
+    @PreAuthorize("@friendService.isReceiverOfRequest(#friendRequestActionDTO.requestId())")
     public ResponseEntity<Void> respondToFriendRequest(@RequestBody FriendRequestActionDTO friendRequestActionDTO) {
         friendService.respondToFriendRequest(friendRequestActionDTO.requestId(), friendRequestActionDTO.accepted());
         return ResponseEntity.ok().build();
@@ -50,9 +50,10 @@ public class FriendController {
     }
 
     @DeleteMapping("/remove-friend")
-    public ResponseEntity<Void> removeFriend(@RequestBody EmailDTO friendEmail) {
+    @PreAuthorize("@friendService.areFriends(#friendEmail)")
+    public ResponseEntity<Void> removeFriend(@RequestParam String friendEmail) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        friendService.removeFriend(userEmail, friendEmail.email());
+        friendService.removeFriend(userEmail, friendEmail);
         return ResponseEntity.ok().build();
     }
 

@@ -22,8 +22,8 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM FriendRequest fr WHERE fr.sender = :sender AND fr.receiver = :receiver")
-    void deleteBySenderAndReceiver(@Param("sender") User sender, @Param("receiver") User receiver); // todo: do poprawy jako body przrekazywac
+    @Query("DELETE FROM FriendRequest fr WHERE (fr.sender.id = :userId AND fr.receiver.id = :friendId) OR (fr.sender.id = :friendId AND fr.receiver.id = :userId)")
+    void deleteAllBetweenUsers(@Param("userId") Long userId, @Param("friendId") Long friendId);
 
 
     List<FriendRequest> findBySender(User currentUser);

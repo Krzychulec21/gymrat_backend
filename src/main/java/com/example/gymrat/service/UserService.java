@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,15 +68,17 @@ public class UserService {
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow();
-    }
-
-
+    } //todo: trzeba to poprawic (niepotrzebne chyba)
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public Long getId(String email) {
-        User user =  userRepository.findByEmail(email).orElseThrow();
-        return user.getId();
+    public boolean isCurrentUser(Long userId) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByEmail(currentUserEmail).orElse(null);
+        return currentUser != null && currentUser.getId().equals(userId);
     }
+
+
+
 }
