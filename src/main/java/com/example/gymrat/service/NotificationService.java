@@ -20,24 +20,25 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public void sendNotification(User receiver, String message, NotificationType type) {
-        // Utwórz obiekt Notification
+    public void sendNotification(User receiver, User sender, String message, NotificationType type) {
         Notification notification = new Notification();
         notification.setNotificationType(type);
         notification.setReceiver(receiver);
+        notification.setSender(sender);
         notification.setContent(message);
         notificationRepository.save(notification);
 
-        // Utwórz obiekt NotificationDTO do wysłania przez WebSocket
         NotificationDTO notificationDTO = new NotificationDTO(
                 notification.getId(),
                 notification.getContent(),
                 notification.getTimestamp(),
                 notification.getNotificationType(),
-                notification.isRead()
+                notification.isRead(),
+                sender != null ? sender.getEmail() : null,
+                sender != null ? sender.getFirstName() + " " + sender.getLastName() : null
         );
 
-        // Wyślij obiekt NotificationDTO przez WebSocket
+
         simpMessagingTemplate.convertAndSendToUser(receiver.getEmail(), "/queue/notifications", notificationDTO);
     }
 
@@ -50,7 +51,9 @@ public class NotificationService {
                         notification.getContent(),
                         notification.getTimestamp(),
                         notification.getNotificationType(),
-                        notification.isRead()))
+                        notification.isRead(),
+                        notification.getSender() != null ? notification.getSender().getEmail() : null,
+                        notification.getSender() != null ? notification.getSender().getFirstName() + " "+notification.getSender().getLastName() : null))
                 .collect(Collectors.toList());
     }
 

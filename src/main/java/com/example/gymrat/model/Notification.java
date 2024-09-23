@@ -18,9 +18,17 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = true)
+    private User sender;
+
     private String content;
+
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
     private LocalDateTime timestamp = LocalDateTime.now();

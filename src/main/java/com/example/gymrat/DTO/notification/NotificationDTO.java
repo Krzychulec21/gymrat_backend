@@ -8,8 +8,10 @@ public record NotificationDTO(
         Long id,
         String content,
         LocalDateTime timestamp,
-        NotificationType type,
-        boolean isRead
+        NotificationType notificationType,
+        boolean isRead,
+        String senderEmail,
+        String senderName
 
 ) {
 }

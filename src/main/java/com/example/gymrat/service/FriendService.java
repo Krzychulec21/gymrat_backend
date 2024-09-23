@@ -46,7 +46,7 @@ public class FriendService {
             friendRequestRepository.save(newRequest);
         }
 
-        notificationService.sendNotification(receiver, "Nowe zaproszenie od "+ sender.getFirstName() +" " + sender.getLastName(), NotificationType.FRIEND_REQUEST);
+        notificationService.sendNotification(receiver,sender, "Nowe zaproszenie od "+ sender.getFirstName() +" " + sender.getLastName(), NotificationType.FRIEND_REQUEST);
     }
 
     public void respondToFriendRequest(Long requestId, boolean accepted) {
