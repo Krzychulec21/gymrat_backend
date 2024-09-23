@@ -4,25 +4,24 @@ import com.example.gymrat.DTO.chat.ChatMessageDTO;
 import com.example.gymrat.exception.chat.ChatRoomNotFoundException;
 import com.example.gymrat.exception.user.UserNotFoundException;
 import com.example.gymrat.mapper.MessageMapper;
-import com.example.gymrat.model.*;
+import com.example.gymrat.model.ChatRoom;
+import com.example.gymrat.model.Message;
+import com.example.gymrat.model.NotificationType;
+import com.example.gymrat.model.User;
 import com.example.gymrat.repository.ChatRoomRepository;
 import com.example.gymrat.repository.MessageRepository;
-import com.example.gymrat.repository.NotificationRepository;
 import com.example.gymrat.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.messaging.handler.MessagingAdviceBean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -33,19 +32,11 @@ public class ChatService {
     private final NotificationService notificationService;
 
     public Message saveMessage(ChatMessageDTO chatMessageDTO) {
-        User sender = userRepository.findById(chatMessageDTO.senderId()).orElseThrow(
-                () -> new UserNotFoundException("Sender not found with ID: " + chatMessageDTO.senderId()));
-
-        User receiver = userRepository.findById(chatMessageDTO.receiverId()).orElseThrow(
-                () -> new UserNotFoundException("Receiver not found with ID: " + chatMessageDTO.receiverId()));
+        User sender = getUserById(chatMessageDTO.senderId());
+        User receiver = getUserById(chatMessageDTO.receiverId());
 
         ChatRoom chatRoom = chatRoomRepository.findByUsers(chatMessageDTO.senderId(), chatMessageDTO.receiverId()).orElseGet(
-                () -> {
-                    ChatRoom newChatRoom = new ChatRoom();
-                    newChatRoom.setUser1(sender);
-                    newChatRoom.setUser2(receiver);
-                    return chatRoomRepository.save(newChatRoom);
-                });
+                () -> createNewChatRoom(sender, receiver));
 
         Message message = new Message();
         message.setChatRoom(chatRoom);
@@ -58,32 +49,18 @@ public class ChatService {
     }
 
     public Long getChatRoomId(Long senderId, Long receiverId) {
-        return chatRoomRepository.findByUsers(senderId, receiverId).orElseGet(() -> {
-            User user1 = userRepository.findById(senderId).orElseThrow(() ->
-                    new UserNotFoundException("User with ID " + senderId + " not found"));
-            User user2 = userRepository.findById(receiverId).orElseThrow(() ->
-                    new UserNotFoundException("User with ID " + receiverId + " not found"));
-            ChatRoom newChatRoom = new ChatRoom();
-            newChatRoom.setUser1(user1);
-            newChatRoom.setUser2(user2);
-            return chatRoomRepository.save(newChatRoom);
-        }).getId();
+        return chatRoomRepository.findByUsers(senderId, receiverId)
+                .map(ChatRoom::getId)
+                .orElseGet(() -> createNewChatRoom(getUserById(senderId), getUserById(receiverId)).getId());
     }
 
     public void sendMessage(ChatMessageDTO chatMessageDTO) {
         Message savedMessage = saveMessage(chatMessageDTO);
+        User sender = getUserById(chatMessageDTO.senderId());
+        User receiver = getUserById(chatMessageDTO.receiverId());
 
-
-        User sender = userRepository.findById(chatMessageDTO.senderId()).orElseThrow(() ->
-                new UserNotFoundException("User with ID " + chatMessageDTO.senderId() + " not found"));
-        User receiver = userRepository.findById(chatMessageDTO.receiverId()).orElseThrow(() ->
-                new UserNotFoundException("User with ID " + chatMessageDTO.receiverId() + " not found"));
-
-        messagingTemplate.convertAndSendToUser(receiver.getEmail(), "/queue/chat/" + chatMessageDTO.chatRoomId(), messageMapper.toDto(savedMessage));
-        messagingTemplate.convertAndSendToUser(sender.getEmail(), "/queue/chat/" + chatMessageDTO.chatRoomId(), messageMapper.toDto(savedMessage));
-
-
-        notificationService.sendNotification(receiver, "Nowa wiadomość od "+ sender.getFirstName() +" " + sender.getLastName(), NotificationType.MESSAGE);
+        sendMessageToUsers(savedMessage, sender, receiver);
+        sendNotification(sender, receiver);
     }
 
     public List<ChatMessageDTO> getChatHistory(Long roomId) {
@@ -98,14 +75,34 @@ public class ChatService {
     }
 
 
-    //Authorization methods
     public boolean isParticipantInChatRoom(Long roomId) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(userEmail).orElse(null);
-        if (user == null) {
-            return false;
-        }
-        System.out.println("user id"+ user.getId());
-        return chatRoomRepository.existsByIdAndUserId(roomId, user.getId());
+        return userRepository.findByEmail(userEmail)
+                .map(user -> chatRoomRepository.existsByIdAndUserId(roomId, user.getId()))
+                .orElse(false);
     }
+
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+    }
+
+    private ChatRoom createNewChatRoom(User user1, User user2) {
+        ChatRoom newChatRoom = new ChatRoom();
+        newChatRoom.setUser1(user1);
+        newChatRoom.setUser2(user2);
+
+        return chatRoomRepository.save(newChatRoom);
+    }
+    private void sendNotification(User sender, User receiver) {
+        String notificationContent = String.format("Nowa wiadomość od %s %s", sender.getFirstName(), sender.getLastName());
+        notificationService.sendNotification(receiver, sender, notificationContent, NotificationType.MESSAGE);
+    }
+
+    private void sendMessageToUsers(Message message, User sender, User receiver) {
+        ChatMessageDTO messageDTO = messageMapper.toDto(message);
+        messagingTemplate.convertAndSendToUser(receiver.getEmail(), "/queue/chat/" + message.getChatRoom().getId(), messageDTO);
+        messagingTemplate.convertAndSendToUser(sender.getEmail(), "/queue/chat/" + message.getChatRoom().getId(), messageDTO);
+    }
+
 }
