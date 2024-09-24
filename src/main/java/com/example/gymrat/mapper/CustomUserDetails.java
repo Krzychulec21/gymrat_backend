@@ -63,4 +63,7 @@ public class CustomUserDetails implements OAuth2User, UserDetails {
     public boolean isEnabled() {
         return user.isEnabled();
     }
+    public User getUser() {
+        return this.user;
+    }
 }

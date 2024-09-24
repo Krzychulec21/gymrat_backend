@@ -1,5 +1,6 @@
 package com.example.gymrat.config;
 
+import com.example.gymrat.mapper.CustomUserDetails;
 import com.example.gymrat.model.User;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
@@ -55,7 +56,14 @@ public class JwtService {
             UserDetails userDetails
     )
     {
-        User user = (User) userDetails;
+        User user;
+        if (userDetails instanceof User) {
+            user = (User) userDetails;
+        } else if (userDetails instanceof CustomUserDetails) {
+            user = ((CustomUserDetails) userDetails).getUser();
+        } else {
+            throw new IllegalArgumentException("Unexpected userDetails type: " + userDetails.getClass());
+        }
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
