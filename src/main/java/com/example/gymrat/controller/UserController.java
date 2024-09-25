@@ -1,5 +1,6 @@
 package com.example.gymrat.controller;
 
+import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.model.User;
 import com.example.gymrat.service.UserService;
 import lombok.AllArgsConstructor;
@@ -23,11 +24,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<User> getUser() {
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userService.findUserByEmail(userEmail);
-
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserResponseDTO> getUser() {
+        return ResponseEntity.ok(userService.getUserInfo());
     }
 
     @GetMapping("/users")

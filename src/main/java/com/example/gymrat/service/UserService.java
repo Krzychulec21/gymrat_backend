@@ -2,6 +2,7 @@ package com.example.gymrat.service;
 
 import com.example.gymrat.DTO.auth.AuthenticationRequest;
 import com.example.gymrat.DTO.auth.RegisterRequest;
+import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.auth.AuthenticationResponse;
 import com.example.gymrat.config.JwtService;
 import com.example.gymrat.exception.auth.InvalidCredentialsException;
@@ -27,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
 
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -65,10 +67,6 @@ public class UserService {
                 .token(jwtToken)
                 .build();
     }
-
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow();
-    } //todo: trzeba to poprawic (niepotrzebne chyba)
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -78,6 +76,28 @@ public class UserService {
         User currentUser = userRepository.findByEmail(currentUserEmail).orElse(null);
         return currentUser != null && currentUser.getId().equals(userId);
     }
+
+    public UserResponseDTO getUserInfo() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow();
+
+        return new UserResponseDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail()
+        );
+    }
+
+    public User getCurrentUser() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() ->  new UserNotFoundException("User not found with email: " + userEmail));
+    }
+
+
 
 
 

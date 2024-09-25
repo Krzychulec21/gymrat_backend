@@ -45,6 +45,7 @@ public class User implements UserDetails {
     )
     private Set<User> friends = new HashSet<>();
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private PersonalInfo personalInfo;
 

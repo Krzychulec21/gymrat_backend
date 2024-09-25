@@ -3,7 +3,7 @@ package com.example.gymrat.controller;
 import com.example.gymrat.DTO.friends.FriendRequestActionDTO;
 import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.EmailDTO;
-import com.example.gymrat.DTO.user.UserDTO;
+import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.service.FriendService;
 import lombok.AllArgsConstructor;
@@ -36,9 +36,9 @@ public class FriendController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<UserDTO>> getFriends() {
+    public ResponseEntity<List<UserResponseDTO>> getFriends() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<UserDTO> friends = friendService.getFriends(email);
+        List<UserResponseDTO> friends = friendService.getFriends(email);
         return ResponseEntity.ok(friends);
     }
 

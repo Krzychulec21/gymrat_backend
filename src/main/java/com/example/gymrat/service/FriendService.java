@@ -1,12 +1,11 @@
 package com.example.gymrat.service;
 
 import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
-import com.example.gymrat.DTO.user.UserDTO;
+import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
 import com.example.gymrat.model.*;
 import com.example.gymrat.repository.FriendRequestRepository;
-import com.example.gymrat.repository.NotificationRepository;
 import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,10 +64,10 @@ public class FriendService {
         friendRequestRepository.save(request);
     }
 
-    public List<UserDTO> getFriends(String email) {
+    public List<UserResponseDTO> getFriends(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         return user.getFriends().stream()
-                .map(friend -> new UserDTO(friend.getId(), friend.getFirstName(), friend.getLastName(), friend.getEmail()))
+                .map(friend -> new UserResponseDTO(friend.getId(), friend.getFirstName(), friend.getLastName(), friend.getEmail()))
                 .collect(Collectors.toList());
     }
 
