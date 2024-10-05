@@ -8,9 +8,14 @@ import com.example.gymrat.model.*;
 import com.example.gymrat.repository.FriendRequestRepository;
 import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -64,11 +69,12 @@ public class FriendService {
         friendRequestRepository.save(request);
     }
 
-    public List<UserResponseDTO> getFriends(String email) {
+    public Page<UserResponseDTO> getFriends(String email, int page, int size) {
         User user = userRepository.findByEmail(email).orElseThrow();
-        return user.getFriends().stream()
-                .map(friend -> new UserResponseDTO(friend.getId(), friend.getFirstName(), friend.getLastName(), friend.getEmail()))
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> friendsPage = userRepository.findFriendsByUserId(user.getId(), pageable);
+
+        return friendsPage.map(friend -> new UserResponseDTO(friend.getId(), friend.getFirstName(), friend.getLastName(), friend.getEmail()));
     }
 
 
@@ -132,4 +138,24 @@ public class FriendService {
         return user.getFriends().contains(friend);
     }
 
+    public Page<UserWithRequestStatusDTO> searchUsersWithRequestStatus(String userEmail, String query, int page, int size) {
+        User currentUser = userRepository.findByEmail(userEmail).orElseThrow();
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> usersPage = userRepository.searchUsers(query, currentUser.getId(), pageable);
+
+        List<FriendRequest> sentRequests = friendRequestRepository.findBySender(currentUser);
+
+        return usersPage.map(user -> {
+            boolean isFriendRequestSent = sentRequests.stream()
+                    .anyMatch(friendRequest -> friendRequest.getReceiver().equals(user) && friendRequest.getStatus() == RequestStatus.PENDING);
+            return new UserWithRequestStatusDTO(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail(),
+                    isFriendRequestSent
+            );
+        });
+    }
 }

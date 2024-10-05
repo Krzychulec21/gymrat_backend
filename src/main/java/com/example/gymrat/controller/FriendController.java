@@ -7,6 +7,7 @@ import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.service.FriendService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,10 +37,12 @@ public class FriendController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<UserResponseDTO>> getFriends() {
+    public ResponseEntity<Page<UserResponseDTO>> getFriends(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<UserResponseDTO> friends = friendService.getFriends(email);
-        return ResponseEntity.ok(friends);
+        Page<UserResponseDTO> friendsPage = friendService.getFriends(email, page, size);
+        return ResponseEntity.ok(friendsPage);
     }
 
     @GetMapping("/pending-requests")
@@ -64,4 +67,13 @@ public class FriendController {
         return ResponseEntity.ok(usersWithStatus);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<UserWithRequestStatusDTO>> searchUsers(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Page<UserWithRequestStatusDTO> usersPage = friendService.searchUsersWithRequestStatus(userEmail, query, page, size);
+        return ResponseEntity.ok(usersPage);
+    }
 }
