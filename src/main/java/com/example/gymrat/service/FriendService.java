@@ -8,11 +8,10 @@ import com.example.gymrat.model.*;
 import com.example.gymrat.repository.FriendRequestRepository;
 import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,12 +68,46 @@ public class FriendService {
         friendRequestRepository.save(request);
     }
 
-    public Page<UserResponseDTO> getFriends(String email, int page, int size) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        Pageable pageable = PageRequest.of(page, size);
-        Page<User> friendsPage = userRepository.findFriendsByUserId(user.getId(), pageable);
+    public Page<UserResponseDTO> getFriends(String email, int page, int size, String sortBy, String sortDir) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return friendsPage.map(friend -> new UserResponseDTO(friend.getId(), friend.getFirstName(), friend.getLastName(), friend.getEmail()));
+        Sort.Direction direction = Sort.Direction.fromString(sortDir);
+        Sort sort = Sort.by(direction, sortBy);
+
+        List<User> allFriends = userRepository.findFriendsByUserId(user.getId());
+
+        // Manual sorting
+        List<User> sortedFriends = allFriends.stream()
+                .sorted((u1, u2) -> {
+                    if (direction.isAscending()) {
+                        return compareUsers(u1, u2, sortBy);
+                    } else {
+                        return compareUsers(u2, u1, sortBy);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        // Manual pagination
+        int start = (int) PageRequest.of(page, size).getOffset();
+        int end = Math.min((start + PageRequest.of(page, size).getPageSize()), sortedFriends.size());
+        List<User> paginatedFriends = sortedFriends.subList(start, end);
+
+        Page<User> friendsPage = new PageImpl<>(paginatedFriends, PageRequest.of(page, size, sort), allFriends.size());
+
+        return friendsPage.map(friend -> new UserResponseDTO(
+                friend.getId(),
+                friend.getFirstName(),
+                friend.getLastName(),
+                friend.getEmail()
+        ));
+    }
+
+    private int compareUsers(User u1, User u2, String sortBy) {
+        return switch (sortBy) {
+            case "firstName" -> u1.getFirstName().compareTo(u2.getFirstName());
+            case "lastName" -> u1.getLastName().compareTo(u2.getLastName());
+            default -> 0;
+        };
     }
 
 
