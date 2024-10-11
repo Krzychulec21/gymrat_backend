@@ -29,23 +29,13 @@ public class ChatController {
         chatService.sendMessage(chatMessageDTO);
     }
 
-    @Operation(summary = "Get chat history", description = "Retrieves chat history for a specific chat room.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Chat history retrieved successfully."),
-            @ApiResponse(responseCode = "403", description = "Access denied."),
-            @ApiResponse(responseCode = "404", description = "Chat room not found.")
-    })
     @GetMapping("/chat/history/{roomId}")
     @PreAuthorize("@chatService.isParticipantInChatRoom(#roomId)")
     public ResponseEntity<List<ChatMessageDTO>> getChatHistory(@PathVariable Long roomId) {
         return ResponseEntity.ok(chatService.getChatHistory(roomId));
     }
 
-    @Operation(summary = "Get or create chat room", description = "Retrieves or creates a chat room ID between two users.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Chat room ID retrieved successfully."),
-            @ApiResponse(responseCode = "403", description = "Access denied.")
-    })
+
     @GetMapping("/chat/room")
     @PreAuthorize("@userService.isCurrentUser(#senderId)")
     public ResponseEntity<Long> getChatRoom(

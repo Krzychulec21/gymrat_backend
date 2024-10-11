@@ -1,17 +1,17 @@
 package com.example.gymrat.database;
 
 import com.example.gymrat.DTO.auth.RegisterRequest;
-import com.example.gymrat.model.User;
 import com.example.gymrat.repository.UserRepository;
 import com.example.gymrat.service.ChatService;
 import com.example.gymrat.service.FriendService;
 import com.example.gymrat.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.gymrat.model.User;
+
+import java.time.LocalDate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,42 +29,44 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
 
+
     public void seedUsers() {
-        RegisterRequest user1 = new RegisterRequest("Jan", "Kowalski", "kowalczyk", "kowalski@wp.pl", "password");
-        RegisterRequest user2 = new RegisterRequest("Michal", "Barylka", "essunia", "nowak@wp.pl", "password");
-        RegisterRequest user3 = new RegisterRequest("John", "Doe", "johndoe", "johndoe@xample.com", "password");
-        RegisterRequest user4 = new RegisterRequest("Anna", "Nowak", "annaN", "anna@xample.com", "password");
-        RegisterRequest user5 = new RegisterRequest("Ewa", "Zalewska", "ewaz", "ewa@wp.pl", "password");
-        RegisterRequest user6 = new RegisterRequest("Adam", "Malinowski", "adamM", "adam@xample.com", "password");
-        RegisterRequest user7 = new RegisterRequest("Paweł", "Piotrowski", "pawelP", "pawel@xample.com", "password");
-        RegisterRequest user8 = new RegisterRequest("Katarzyna", "Kwiatkowska", "katK", "katarzyna@wp.pl", "password");
-        RegisterRequest user9 = new RegisterRequest("Tomasz", "Jankowski", "tomJ", "tomasz@xample.com", "password");
-        RegisterRequest user10 = new RegisterRequest("Aleksandra", "Zawisza", "aleksandraZ", "aleksandra@xample.com", "password");
-        RegisterRequest user11 = new RegisterRequest("Piotr", "Grabowski", "piotrG", "piotr@xample.com", "password");
-        RegisterRequest user12 = new RegisterRequest("Monika", "Szymanska", "monikaS", "monika@xample.com", "password");
-        RegisterRequest user13 = new RegisterRequest("Wojciech", "Mazur", "wojciechM", "wojciech@xample.com", "password");
-        RegisterRequest user14 = new RegisterRequest("Marek", "Pietrzak", "marekP", "marek@xample.com", "password");
-        RegisterRequest user15 = new RegisterRequest("Magdalena", "Olszewska", "magdaO", "magda@xample.com", "password");
-        RegisterRequest user16 = new RegisterRequest("Dariusz", "Zych", "darekZ", "dariusz@xample.com", "password");
-        RegisterRequest user17 = new RegisterRequest("Agata", "Lewandowska", "agataL", "agata@xample.com", "password");
-        RegisterRequest user18 = new RegisterRequest("Damian", "Sikorski", "damianS", "damian@xample.com", "password");
-        RegisterRequest user19 = new RegisterRequest("Łukasz", "Kamiński", "lukaszK", "lukasz@xample.com", "password");
-        RegisterRequest user20 = new RegisterRequest("Zuzanna", "Wróbel", "zuzannaW", "zuzanna@xample.com", "password");
-        RegisterRequest user21 = new RegisterRequest("Kacper", "Czerwiński", "kacperC", "kacper@xample.com", "password");
-        RegisterRequest user22 = new RegisterRequest("Marta", "Chmielewska", "martaC", "marta@xample.com", "password");
-        RegisterRequest user23 = new RegisterRequest("Rafał", "Wysocki", "rafalW", "rafal@xample.com", "password");
-        RegisterRequest user24 = new RegisterRequest("Justyna", "Sikora", "justynaS", "justyna@xample.com", "password");
-        RegisterRequest user25 = new RegisterRequest("Grzegorz", "Górski", "gregG", "grzegorz@xample.com", "password");
-        RegisterRequest user26 = new RegisterRequest("Karolina", "Michalska", "karolinaM", "karolina@xample.com", "password");
-        RegisterRequest user27 = new RegisterRequest("Patryk", "Sadowski", "patrykS", "patryk@xample.com", "password");
-        RegisterRequest user28 = new RegisterRequest("Izabela", "Wiśniewska", "izabelaW", "izabela@xample.com", "password");
-        RegisterRequest user29 = new RegisterRequest("Artur", "Głowacki", "arturG", "artur@xample.com", "password");
-        RegisterRequest user30 = new RegisterRequest("Joanna", "Kozłowska", "joannaK", "joanna@xample.com", "password");
-        RegisterRequest user31 = new RegisterRequest("Krystian", "Sowa", "krystianS", "krystian@xample.com", "password");
-        RegisterRequest user32 = new RegisterRequest("Natalia", "Wesołowska", "nataliaW", "natalia@xample.com", "password");
-        RegisterRequest user33 = new RegisterRequest("Maciej", "Stasiak", "maciejS", "maciej@xample.com", "password");
-        RegisterRequest user34 = new RegisterRequest("Oliwia", "Zając", "oliwiaZ", "oliwia@xample.com", "password");
-        RegisterRequest user35 = new RegisterRequest("Dominik", "Król", "dominikK", "dominik@xample.com", "password");
+        RegisterRequest user1 = new RegisterRequest("Jan", "Kowalski", "kowalczyk", "kowalski@wp.pl", "password", LocalDate.of(2002, 12, 12));
+        RegisterRequest user2 = new RegisterRequest("Michal", "Barylka", "essunia", "nowak@wp.pl", "password", LocalDate.of(1998, 3, 5));
+        RegisterRequest user3 = new RegisterRequest("John", "Doe", "johndoe", "johndoe@example.com", "password", LocalDate.of(1990, 7, 21));
+        RegisterRequest user4 = new RegisterRequest("Anna", "Nowak", "annaN", "anna@example.com", "password", LocalDate.of(1985, 1, 15));
+        RegisterRequest user5 = new RegisterRequest("Ewa", "Zalewska", "ewaz", "ewa@wp.pl", "password", LocalDate.of(2000, 11, 30));
+        RegisterRequest user6 = new RegisterRequest("Adam", "Malinowski", "adamM", "adam@example.com", "password", LocalDate.of(1995, 5, 20));
+        RegisterRequest user7 = new RegisterRequest("Paweł", "Piotrowski", "pawelP", "pawel@example.com", "password", LocalDate.of(1999, 2, 18));
+        RegisterRequest user8 = new RegisterRequest("Katarzyna", "Kwiatkowska", "katK", "katarzyna@wp.pl", "password", LocalDate.of(2001, 4, 4));
+        RegisterRequest user9 = new RegisterRequest("Tomasz", "Jankowski", "tomJ", "tomasz@example.com", "password", LocalDate.of(1986, 8, 8));
+        RegisterRequest user10 = new RegisterRequest("Aleksandra", "Zawisza", "aleksandraZ", "aleksandra@example.com", "password", LocalDate.of(1987, 6, 16));
+        RegisterRequest user11 = new RegisterRequest("Piotr", "Grabowski", "piotrG", "piotr@example.com", "password", LocalDate.of(1992, 9, 9));
+        RegisterRequest user12 = new RegisterRequest("Monika", "Szymanska", "monikaS", "monika@example.com", "password", LocalDate.of(1993, 10, 25));
+        RegisterRequest user13 = new RegisterRequest("Wojciech", "Mazur", "wojciechM", "wojciech@example.com", "password", LocalDate.of(1988, 12, 1));
+        RegisterRequest user14 = new RegisterRequest("Marek", "Pietrzak", "marekP", "marek@example.com", "password", LocalDate.of(1996, 3, 15));
+        RegisterRequest user15 = new RegisterRequest("Magdalena", "Olszewska", "magdaO", "magda@example.com", "password", LocalDate.of(1994, 7, 22));
+        RegisterRequest user16 = new RegisterRequest("Dariusz", "Zych", "darekZ", "dariusz@example.com", "password", LocalDate.of(1983, 5, 30));
+        RegisterRequest user17 = new RegisterRequest("Agata", "Lewandowska", "agataL", "agata@example.com", "password", LocalDate.of(1997, 8, 4));
+        RegisterRequest user18 = new RegisterRequest("Damian", "Sikorski", "damianS", "damian@example.com", "password", LocalDate.of(2000, 2, 12));
+        RegisterRequest user19 = new RegisterRequest("Łukasz", "Kamiński", "lukaszK", "lukasz@example.com", "password", LocalDate.of(1989, 6, 6));
+        RegisterRequest user20 = new RegisterRequest("Zuzanna", "Wróbel", "zuzannaW", "zuzanna@example.com", "password", LocalDate.of(1991, 11, 28));
+        RegisterRequest user21 = new RegisterRequest("Kacper", "Czerwiński", "kacperC", "kacper@example.com", "password", LocalDate.of(1984, 4, 17));
+        RegisterRequest user22 = new RegisterRequest("Marta", "Chmielewska", "martaC", "marta@example.com", "password", LocalDate.of(1998, 9, 20));
+        RegisterRequest user23 = new RegisterRequest("Rafał", "Wysocki", "rafalW", "rafal@example.com", "password", LocalDate.of(1993, 1, 1));
+        RegisterRequest user24 = new RegisterRequest("Justyna", "Sikora", "justynaS", "justyna@example.com", "password", LocalDate.of(1995, 12, 10));
+        RegisterRequest user25 = new RegisterRequest("Grzegorz", "Górski", "gregG", "grzegorz@example.com", "password", LocalDate.of(1992, 7, 15));
+        RegisterRequest user26 = new RegisterRequest("Karolina", "Michalska", "karolinaM", "karolina@example.com", "password", LocalDate.of(2003, 3, 3));
+        RegisterRequest user27 = new RegisterRequest("Patryk", "Sadowski", "patrykS", "patryk@example.com", "password", LocalDate.of(1986, 2, 14));
+        RegisterRequest user28 = new RegisterRequest("Izabela", "Wiśniewska", "izabelaW", "izabela@example.com", "password", LocalDate.of(1994, 5, 22));
+        RegisterRequest user29 = new RegisterRequest("Artur", "Głowacki", "arturG", "artur@example.com", "password", LocalDate.of(1988, 8, 28));
+        RegisterRequest user30 = new RegisterRequest("Joanna", "Kozłowska", "joannaK", "joanna@example.com", "password", LocalDate.of(1997, 10, 31));
+        RegisterRequest user31 = new RegisterRequest("Krystian", "Sowa", "krystianS", "krystian@example.com", "password", LocalDate.of(1981, 9, 8));
+        RegisterRequest user32 = new RegisterRequest("Natalia", "Wesołowska", "nataliaW", "natalia@example.com", "password", LocalDate.of(1995, 4, 12));
+        RegisterRequest user33 = new RegisterRequest("Maciej", "Stasiak", "maciejS", "maciej@example.com", "password", LocalDate.of(1991, 3, 19));
+        RegisterRequest user34 = new RegisterRequest("Oliwia", "Zając", "oliwiaZ", "oliwia@example.com", "password", LocalDate.of(1999, 6, 24));
+        RegisterRequest user35 = new RegisterRequest("Dominik", "Król", "dominikK", "dominik@example.com", "password", LocalDate.of(2000, 7, 16));
+
 
         userService.register(user1);
         userService.register(user2);
@@ -104,54 +106,56 @@ public class DatabaseSeeder implements CommandLineRunner {
 }
 
     public void addFriends() {
-        User user1 = userRepository.findByEmail("kowalski@wp.pl").orElseThrow();
+        User user1 = userRepository.findByEmail("kowalski@wp.pl")
+                .orElseThrow(() -> new RuntimeException("User not found: kowalski@wp.pl"));
 
         String[] userEmails = {
                 "nowak@wp.pl",
-                "johndoe@xample.com",
-                "anna@xample.com",
+                "johndoe@example.com",
+                "anna@example.com",
                 "ewa@wp.pl",
-                "adam@xample.com",
-                "pawel@xample.com",
+                "adam@example.com",
+                "pawel@example.com",
                 "katarzyna@wp.pl",
-                "tomasz@xample.com",
-                "aleksandra@xample.com",
-                "piotr@xample.com",
-                "monika@xample.com",
-                "wojciech@xample.com",
-                "marek@xample.com",
-                "magda@xample.com",
-                "dariusz@xample.com",
-                "agata@xample.com",
-                "damian@xample.com",
-                "lukasz@xample.com",
-                "zuzanna@xample.com",
-                "kacper@xample.com",
-                "marta@xample.com",
-                "rafal@xample.com",
-                "justyna@xample.com",
-                "grzegorz@xample.com",
-                "karolina@xample.com",
-                "patryk@xample.com",
-                "izabela@xample.com",
-                "artur@xample.com",
-                "joanna@xample.com",
-                "krystian@xample.com",
-                "natalia@xample.com",
-                "maciej@xample.com",
-                "oliwia@xample.com",
-                "dominik@xample.com"
+                "tomasz@example.com",
+                "aleksandra@example.com",
+                "piotr@example.com",
+                "monika@example.com",
+                "wojciech@example.com",
+                "marek@example.com",
+                "magda@example.com",
+                "dariusz@example.com",
+                "agata@example.com",
+                "damian@example.com",
+                "lukasz@example.com",
+                "zuzanna@example.com",
+                "kacper@example.com",
+                "marta@example.com",
+                "rafal@example.com",
+                "justyna@example.com",
+                "grzegorz@example.com",
+                "karolina@example.com",
+                "patryk@example.com",
+                "izabela@example.com",
+                "artur@example.com",
+                "joanna@example.com",
+                "krystian@example.com",
+                "natalia@example.com",
+                "maciej@example.com",
+                "oliwia@example.com",
+                "dominik@example.com"
         };
 
         for (int i = 0; i < userEmails.length; i++) {
             String email = userEmails[i];
-            User otherUser = userRepository.findByEmail(email).orElseThrow();
+            User otherUser = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + email));
 
             friendService.sendFriendRequest(user1.getEmail(), otherUser.getEmail());
-
             friendService.respondToFriendRequest((long) (i + 1), true);
         }
     }
+
 
 
 }

@@ -23,4 +23,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND u.id <> :currentUserId")
     Page<User> searchUsers(@Param("query") String query, @Param("currentUserId") Long currentUserId, Pageable pageable);
 
+    @Query("SELECT u, MAX(m.timestamp) as latestMessageTimestamp FROM User u " +
+            "JOIN u.personalInfo pi " +
+            "LEFT JOIN Message m ON ((m.sender.id = u.id AND m.receiver.id = :currentUserId) " +
+            "OR (m.sender.id = :currentUserId AND m.receiver.id = u.id)) " +
+            "WHERE u.id IN (SELECT f.id FROM User usr JOIN usr.friends f WHERE usr.id = :currentUserId) " +
+            "AND (YEAR(CURRENT_DATE) - YEAR(pi.dateOfBirth) BETWEEN :minAge AND :maxAge) " +
+            "GROUP BY u.id")
+    Page<Object[]> findFriendsWithLatestMessageTimestampAndAgeRange(
+            @Param("currentUserId") Long currentUserId,
+            @Param("minAge") Integer minAge,
+            @Param("maxAge") Integer maxAge,
+            Pageable pageable);
+
+
 }

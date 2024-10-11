@@ -1,6 +1,7 @@
 package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.friends.FriendRequestActionDTO;
+import com.example.gymrat.DTO.friends.FriendResponseDTO;
 import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.EmailDTO;
 import com.example.gymrat.DTO.user.UserResponseDTO;
@@ -22,17 +23,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/friends")
 @AllArgsConstructor
-@Tag(name = "Friends", description = "Endpoints for managing friend relationships")
 public class FriendController {
 
     private final FriendService friendService;
 
-    @Operation(summary = "Send a friend request", description = "Sends a friend request to another user.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Friend request sent successfully."),
-            @ApiResponse(responseCode = "400", description = "Validation errors."),
-            @ApiResponse(responseCode = "409", description = "Friend request already exists.")
-    })
+
     @PostMapping("/send-request")
     public ResponseEntity<Void> sendFriendRequest(@RequestBody EmailDTO receiverEmail) {
         String senderEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -40,12 +35,7 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Respond to a friend request", description = "Accepts or rejects a friend request.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Friend request responded successfully."),
-            @ApiResponse(responseCode = "403", description = "Access denied."),
-            @ApiResponse(responseCode = "404", description = "Friend request not found.")
-    })
+
     @PostMapping("/respond-request")
     @PreAuthorize("@friendService.isReceiverOfRequest(#friendRequestActionDTO.requestId())")
     public ResponseEntity<Void> respondToFriendRequest(@RequestBody FriendRequestActionDTO friendRequestActionDTO) {
@@ -53,18 +43,17 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Get friends list", description = "Retrieves the list of friends for the current user.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Friends list retrieved successfully.")
-    })
+
     @GetMapping("")
-    public ResponseEntity<Page<UserResponseDTO>> getFriends(
+    public ResponseEntity<Page<FriendResponseDTO>> getFriends(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "firstName") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "18") int minAge,
+            @RequestParam(defaultValue = "50") int maxAge) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Page<UserResponseDTO> friendsPage = friendService.getFriends(email, page, size, sortBy, sortDir);
+        Page<FriendResponseDTO> friendsPage = friendService.getFriends(email, page, size, sortBy, sortDir, minAge, maxAge);
         return ResponseEntity.ok(friendsPage);
     }
 
@@ -79,12 +68,7 @@ public class FriendController {
         return ResponseEntity.ok(requests);
     }
 
-    @Operation(summary = "Remove a friend", description = "Removes a friend from the user's friend list.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Friend removed successfully."),
-            @ApiResponse(responseCode = "403", description = "Access denied."),
-            @ApiResponse(responseCode = "404", description = "User not found.")
-    })
+
     @DeleteMapping("/remove-friend")
     @PreAuthorize("@friendService.areFriends(#friendEmail)")
     public ResponseEntity<Void> removeFriend(@RequestParam String friendEmail) {
@@ -93,10 +77,7 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Get users with request status", description = "Retrieves all users with their friend request status relative to the current user.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Users retrieved successfully.")
-    })
+
     @GetMapping("/users-with-request-status")
     public ResponseEntity<List<UserWithRequestStatusDTO>> getUsersWithRequestStatus() {
         String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -104,10 +85,6 @@ public class FriendController {
         return ResponseEntity.ok(usersWithStatus);
     }
 
-    @Operation(summary = "Search users", description = "Searches for users based on a query string.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Users found successfully.")
-    })
     @GetMapping("/search")
     public ResponseEntity<Page<UserWithRequestStatusDTO>> searchUsers(
             @RequestParam String query,

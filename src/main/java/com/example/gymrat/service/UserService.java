@@ -9,7 +9,9 @@ import com.example.gymrat.exception.auth.InvalidCredentialsException;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
 import com.example.gymrat.exception.user.UserNotFoundException;
 import com.example.gymrat.mapper.UserMapper;
+import com.example.gymrat.model.PersonalInfo;
 import com.example.gymrat.model.User;
+import com.example.gymrat.repository.PersonalInfoRepository;
 import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PersonalInfoRepository personalInfoRepository;
 
 
 
@@ -38,9 +41,17 @@ public class UserService {
         if (userRepository.findByNickname(request.nickname()).isPresent()) {
             throw new UserAlreadyExistsException("User with nickname " + request.nickname() + " already exists");
         }
+
         User user = UserMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);
+
+        PersonalInfo personalInfo = new PersonalInfo();
+        personalInfo.setUser(user);
+        personalInfo.setDateOfBirth(request.birthday());
+        personalInfoRepository.save(personalInfo);
+
+
 
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

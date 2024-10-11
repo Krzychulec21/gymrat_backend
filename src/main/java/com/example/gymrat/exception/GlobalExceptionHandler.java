@@ -56,4 +56,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleChatRoomNotFoundException(ChatRoomNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(InvalidFileFormatException.class)
+    public ResponseEntity<String> handleInvalidFileFormatException(InvalidFileFormatException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+
 }
+

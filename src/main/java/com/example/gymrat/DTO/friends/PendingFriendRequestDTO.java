@@ -3,9 +3,9 @@ package com.example.gymrat.DTO.friends;
 import com.example.gymrat.model.RequestStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Data Transfer Object for pending friend requests")
+
 public record PendingFriendRequestDTO(
-        @Schema(description = "Unique identifier of the friend request", example = "1")
+
         Long Id,
 
         @Schema(description = "Email of the sender", example = "sender@example.com")

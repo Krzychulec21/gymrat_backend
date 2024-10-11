@@ -1,5 +1,6 @@
 package com.example.gymrat.service;
 
+import com.example.gymrat.DTO.friends.FriendResponseDTO;
 import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,38 +70,27 @@ public class FriendService {
         friendRequestRepository.save(request);
     }
 
-    public Page<UserResponseDTO> getFriends(String email, int page, int size, String sortBy, String sortDir) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public Page<FriendResponseDTO> getFriends(String email, int page, int size, String sortBy, String sortDir, int minAge, int maxAge) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         Sort.Direction direction = Sort.Direction.fromString(sortDir);
-        Sort sort = Sort.by(direction, sortBy);
+        Sort sort = Sort.by(direction, sortBy.equals("latestMessage") ? "latestMessageTimestamp" : sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        List<User> allFriends = userRepository.findFriendsByUserId(user.getId());
+        Page<Object[]> friendsPage = userRepository.findFriendsWithLatestMessageTimestampAndAgeRange(user.getId(),minAge, maxAge, pageable);
 
-        // Manual sorting
-        List<User> sortedFriends = allFriends.stream()
-                .sorted((u1, u2) -> {
-                    if (direction.isAscending()) {
-                        return compareUsers(u1, u2, sortBy);
-                    } else {
-                        return compareUsers(u2, u1, sortBy);
-                    }
-                })
-                .collect(Collectors.toList());
-
-        // Manual pagination
-        int start = (int) PageRequest.of(page, size).getOffset();
-        int end = Math.min((start + PageRequest.of(page, size).getPageSize()), sortedFriends.size());
-        List<User> paginatedFriends = sortedFriends.subList(start, end);
-
-        Page<User> friendsPage = new PageImpl<>(paginatedFriends, PageRequest.of(page, size, sort), allFriends.size());
-
-        return friendsPage.map(friend -> new UserResponseDTO(
-                friend.getId(),
-                friend.getFirstName(),
-                friend.getLastName(),
-                friend.getEmail()
-        ));
+        return friendsPage.map(obj -> {
+            User friend = (User) obj[0];
+            LocalDateTime latestMessageTimestamp = (LocalDateTime) obj[1];
+            return new FriendResponseDTO(
+                    friend.getId(),
+                    friend.getFirstName(),
+                    friend.getLastName(),
+                    friend.getEmail(),
+                    latestMessageTimestamp
+            );
+        });
     }
 
     private int compareUsers(User u1, User u2, String sortBy) {

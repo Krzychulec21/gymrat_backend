@@ -53,8 +53,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         byte[] avatarBytes = downloadAvatarAsBytes(pictrureUrl);
 
-        System.out.println("avatar: " + Arrays.toString(avatarBytes));
-        System.out.println("przed");
         PersonalInfo personalInfo = user.getPersonalInfo();
         if (personalInfo == null) {
             personalInfo = new PersonalInfo();
@@ -85,7 +83,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 while ((bytesRead = in.read(buffer)) != -1) {
                     baos.write(buffer, 0, bytesRead);
                 }
-                System.out.println("zapisalo zhecie");
                 return baos.toByteArray();
             }
         }

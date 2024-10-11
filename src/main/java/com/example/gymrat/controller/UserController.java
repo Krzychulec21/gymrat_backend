@@ -1,6 +1,7 @@
 package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.user.UserResponseDTO;
+import com.example.gymrat.mapper.UserMapper;
 import com.example.gymrat.model.User;
 import com.example.gymrat.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,23 +22,16 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Get current user info", description = "Retrieves information about the currently authenticated user.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User information retrieved successfully."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized.")
-    })
+
     @GetMapping("")
     public ResponseEntity<UserResponseDTO> getUser() {
         return ResponseEntity.ok(userService.getUserInfo());
     }
 
-    @Operation(summary = "Get all users", description = "Retrieves a list of all users.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Users retrieved successfully.")
-    })
+
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(users.stream().map(user -> new UserResponseDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail())).toList());
     }
 }
