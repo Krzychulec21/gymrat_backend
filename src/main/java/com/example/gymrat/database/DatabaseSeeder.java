@@ -1,10 +1,14 @@
 package com.example.gymrat.database;
 
 import com.example.gymrat.DTO.auth.RegisterRequest;
+import com.example.gymrat.DTO.workout.ExerciseSessionDTO;
+import com.example.gymrat.DTO.workout.ExerciseSetDTO;
+import com.example.gymrat.DTO.workout.WorkoutSessionDTO;
+import com.example.gymrat.model.CategoryName;
+import com.example.gymrat.model.Exercise;
+import com.example.gymrat.repository.ExerciseRepository;
 import com.example.gymrat.repository.UserRepository;
-import com.example.gymrat.service.ChatService;
-import com.example.gymrat.service.FriendService;
-import com.example.gymrat.service.UserService;
+import com.example.gymrat.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.gymrat.model.User;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -20,14 +26,17 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final UserService userService;
     private final ChatService chatService;
     private final FriendService friendService;
+    private final ExerciseRepository exerciseRepository;
+    private final WorkoutService workoutService;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
         seedUsers();
         addFriends();
+        addExercises();
+        addWorkoutSession();
     }
-
 
 
     public void seedUsers() {
@@ -103,7 +112,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         userService.register(user33);
         userService.register(user34);
         userService.register(user35);
-}
+    }
 
     public void addFriends() {
         User user1 = userRepository.findByEmail("kowalski@wp.pl")
@@ -156,6 +165,93 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
+    public void addExercises() {
+
+        List<Exercise> exercises = Arrays.asList(
+                // LEGS
+                new Exercise(null, "Squat", CategoryName.LEGS),
+                new Exercise(null, "Lunges", CategoryName.LEGS),
+                new Exercise(null, "Leg Press", CategoryName.LEGS),
+                new Exercise(null, "Leg Curl", CategoryName.LEGS),
+                new Exercise(null, "Calf Raise", CategoryName.LEGS),
+
+                // CHEST
+                new Exercise(null, "Bench Press", CategoryName.CHEST),
+                new Exercise(null, "Incline Dumbbell Press", CategoryName.CHEST),
+                new Exercise(null, "Chest Fly", CategoryName.CHEST),
+                new Exercise(null, "Push-ups", CategoryName.CHEST),
+                new Exercise(null, "Dips", CategoryName.CHEST),
+
+                // BACK
+                new Exercise(null, "Deadlift", CategoryName.BACK),
+                new Exercise(null, "Pull-ups", CategoryName.BACK),
+                new Exercise(null, "Lat Pulldown", CategoryName.BACK),
+                new Exercise(null, "Bent-over Row", CategoryName.BACK),
+                new Exercise(null, "T-Bar Row", CategoryName.BACK),
+
+                // BICEPS
+                new Exercise(null, "Barbell Curl", CategoryName.BICEPS),
+                new Exercise(null, "Dumbbell Curl", CategoryName.BICEPS),
+                new Exercise(null, "Concentration Curl", CategoryName.BICEPS),
+                new Exercise(null, "Hammer Curl", CategoryName.BICEPS),
+                new Exercise(null, "Preacher Curl", CategoryName.BICEPS),
+
+                // TRICEPS
+                new Exercise(null, "Triceps Pushdown", CategoryName.TRICEPS),
+                new Exercise(null, "Overhead Triceps Extension", CategoryName.TRICEPS),
+                new Exercise(null, "Skull Crusher", CategoryName.TRICEPS),
+                new Exercise(null, "Triceps Dips", CategoryName.TRICEPS),
+                new Exercise(null, "Close-Grip Bench Press", CategoryName.TRICEPS),
+
+                // SHOULDERS
+                new Exercise(null, "Shoulder Press", CategoryName.SHOULDERS),
+                new Exercise(null, "Lateral Raise", CategoryName.SHOULDERS),
+                new Exercise(null, "Front Raise", CategoryName.SHOULDERS),
+                new Exercise(null, "Arnold Press", CategoryName.SHOULDERS),
+                new Exercise(null, "Reverse Pec Deck", CategoryName.SHOULDERS),
+
+                // ABS
+                new Exercise(null, "Crunches", CategoryName.ABS),
+                new Exercise(null, "Leg Raise", CategoryName.ABS),
+                new Exercise(null, "Plank", CategoryName.ABS),
+                new Exercise(null, "Russian Twist", CategoryName.ABS),
+                new Exercise(null, "Bicycle Crunch", CategoryName.ABS)
+        );
+
+        exerciseRepository.saveAll(exercises);
+    }
+
+    public void addWorkoutSession() {
+        // Example exercises (assuming these already exist in your DB)
+        Long exercise1Id = 1L; // ID for "Squat"
+        Long exercise2Id = 2L; // ID for "Bench Press"
+
+        // Create sets for the first exercise session (e.g., Squat)
+        ExerciseSetDTO set1 = new ExerciseSetDTO(12, 80.0); // 12 reps, 80 kg
+        ExerciseSetDTO set2 = new ExerciseSetDTO(10, 85.0); // 10 reps, 85 kg
+        List<ExerciseSetDTO> squatSets = Arrays.asList(set1, set2);
+
+        // Create the first exercise session (Squat)
+        ExerciseSessionDTO squatSession = new ExerciseSessionDTO(exercise1Id, squatSets);
+
+        // Create sets for the second exercise session (e.g., Bench Press)
+        ExerciseSetDTO set3 = new ExerciseSetDTO(10, 60.0); // 10 reps, 60 kg
+        ExerciseSetDTO set4 = new ExerciseSetDTO(8, 65.0);  // 8 reps, 65 kg
+        List<ExerciseSetDTO> benchPressSets = Arrays.asList(set3, set4);
+
+        // Create the second exercise session (Bench Press)
+        ExerciseSessionDTO benchPressSession = new ExerciseSessionDTO(exercise2Id, benchPressSets);
+
+        // Create a workout session with both exercise sessions
+        WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO(
+                LocalDate.now(),            // Current date
+                "Morning workout",          // Note
+                Arrays.asList(squatSession, benchPressSession) // List of exercise sessions
+        );
+
+        // Save workout using WorkoutService
+        workoutService.saveWorkout(workoutSessionDTO);
+    }
 
 
 }

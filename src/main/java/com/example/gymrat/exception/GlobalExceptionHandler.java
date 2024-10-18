@@ -6,7 +6,6 @@ import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
 import com.example.gymrat.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -60,6 +59,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidFileFormatException.class)
     public ResponseEntity<String> handleInvalidFileFormatException(InvalidFileFormatException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
 
