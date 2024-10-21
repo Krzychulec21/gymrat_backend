@@ -2,12 +2,10 @@ package com.example.gymrat.service;
 
 import com.example.gymrat.DTO.personalInfo.PersonalInfoRequestDTO;
 import com.example.gymrat.DTO.personalInfo.PersonalInfoResponseDTO;
-import com.example.gymrat.exception.InvalidFileFormatException;
 import com.example.gymrat.mapper.PersonalInfoMapper;
 import com.example.gymrat.model.PersonalInfo;
 import com.example.gymrat.model.User;
 import com.example.gymrat.repository.PersonalInfoRepository;
-import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.http.HttpStatus;
@@ -15,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

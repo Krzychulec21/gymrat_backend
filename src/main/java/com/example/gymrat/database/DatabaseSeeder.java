@@ -6,8 +6,10 @@ import com.example.gymrat.DTO.workout.ExerciseSetDTO;
 import com.example.gymrat.DTO.workout.WorkoutSessionDTO;
 import com.example.gymrat.model.CategoryName;
 import com.example.gymrat.model.Exercise;
+import com.example.gymrat.model.WorkoutSession;
 import com.example.gymrat.repository.ExerciseRepository;
 import com.example.gymrat.repository.UserRepository;
+import com.example.gymrat.repository.WorkoutSessionRepository;
 import com.example.gymrat.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -28,6 +30,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final FriendService friendService;
     private final ExerciseRepository exerciseRepository;
     private final WorkoutService workoutService;
+    private final WorkoutSessionRepository workoutSessionRepository;
 
     @Override
     @Transactional
@@ -222,6 +225,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     public void addWorkoutSession() {
+
+        User user = userRepository.findByEmail("kowalski@wp.pl").orElseThrow();
         // Example exercises (assuming these already exist in your DB)
         Long exercise1Id = 1L; // ID for "Squat"
         Long exercise2Id = 2L; // ID for "Bench Press"
@@ -249,8 +254,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 Arrays.asList(squatSession, benchPressSession) // List of exercise sessions
         );
 
-        // Save workout using WorkoutService
-        workoutService.saveWorkout(workoutSessionDTO);
+        WorkoutSession workoutSession = workoutService.mapToEntity(workoutSessionDTO);
+        workoutSession.setUser(user);
+
+        workoutSessionRepository.save(workoutSession);
     }
 
 

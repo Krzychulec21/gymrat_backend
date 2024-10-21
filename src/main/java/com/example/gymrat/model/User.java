@@ -49,6 +49,10 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private PersonalInfo personalInfo;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<WorkoutSession> workoutSession;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

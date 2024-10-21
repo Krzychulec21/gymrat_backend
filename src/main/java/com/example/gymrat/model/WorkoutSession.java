@@ -25,4 +25,8 @@ public class WorkoutSession {
 
     @OneToMany(mappedBy = "workoutSession", cascade = CascadeType.ALL)
     private List<ExerciseSession> exerciseSessions;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
