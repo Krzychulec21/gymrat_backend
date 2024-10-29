@@ -2,14 +2,20 @@ package com.example.gymrat.service;
 
 import com.example.gymrat.DTO.workout.ExerciseSessionDTO;
 import com.example.gymrat.DTO.workout.WorkoutSessionDTO;
+import com.example.gymrat.DTO.workout.WorkoutSessionResponseDTO;
 import com.example.gymrat.exception.ResourceNotFoundException;
+import com.example.gymrat.mapper.WorkoutMapper;
 import com.example.gymrat.model.*;
 import com.example.gymrat.repository.ExerciseRepository;
 import com.example.gymrat.repository.ExerciseSessionRepository;
 import com.example.gymrat.repository.ExerciseSetRepository;
 import com.example.gymrat.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ProblemDetail;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,44 +33,11 @@ public class WorkoutService {
     private final ExerciseSetRepository exerciseSetRepository;
     private final ExerciseSessionRepository exerciseSessionRepository;
     private final UserService userService;
-
-
-    public WorkoutSession mapToEntity(WorkoutSessionDTO workoutSessionDTO) {
-        System.out.println("otrzymane wokrout session: " + workoutSessionDTO);
-        WorkoutSession workoutSession = new WorkoutSession();
-        workoutSession.setDate(workoutSessionDTO.date());
-        workoutSession.setNote(workoutSessionDTO.note());
-
-        List<ExerciseSession> exerciseSessions = workoutSessionDTO.exerciseSessions()
-                .stream()
-                .map(esDTO -> {
-                    Exercise exercise = exerciseRepository.findById(esDTO.exerciseId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Exercise not found"));
-
-                    ExerciseSession exerciseSession = new ExerciseSession();
-                    exerciseSession.setExercise(exercise);
-                    exerciseSession.setWorkoutSession(workoutSession);
-
-                    List<ExerciseSet> sets = esDTO.sets().stream().map(setDTO -> {
-                        ExerciseSet exerciseSet = new ExerciseSet();
-                        exerciseSet.setReps(setDTO.reps());
-                        exerciseSet.setWeight(setDTO.weight());
-                        exerciseSet.setExerciseSession(exerciseSession);
-                        return exerciseSet;
-                    }).collect(Collectors.toList());
-
-                    exerciseSession.setSets(sets);
-                    return exerciseSession;
-                }).collect(Collectors.toList());
-
-        workoutSession.setExerciseSessions(exerciseSessions);
-        return workoutSession;
-    }
-
+    private final WorkoutMapper workoutMapper;
 
 
     public void saveWorkout(WorkoutSessionDTO workoutSessionDTO) {
-        WorkoutSession workoutSession = mapToEntity(workoutSessionDTO);
+        WorkoutSession workoutSession = workoutMapper.mapToEntity(workoutSessionDTO);
         User user = userService.getCurrentUser();
         workoutSession.setUser(user);
         workoutSessionRepository.save(workoutSession);
@@ -81,7 +54,7 @@ public class WorkoutService {
     public Double getTotalWeightLiftedByUser() {
         User user = userService.getCurrentUser();
         return workoutSessionRepository.findTotalWeightLiftedByUser(user.getId());
-        }
+    }
 
     public LocalDate getDateOfTheLastWorkout() {
         User user = userService.getCurrentUser();
@@ -90,7 +63,7 @@ public class WorkoutService {
                 .orElse(null);
     }
 
-    public List<CategoryPercentage> getTopCategoriesForUser () {
+    public List<CategoryPercentage> getTopCategoriesForUser() {
         User user = userService.getCurrentUser();
 
         List<Object[]> results = workoutSessionRepository.findTopCategoriesByUserIdWithSetCount(user.getId());
@@ -104,7 +77,8 @@ public class WorkoutService {
         for (Object[] result : results) {
             String category = ((CategoryName) result[0]).name();
             int setCount = ((Number) result[1]).intValue();
-            double percentage = (double) setCount / totalSets * 100;
+            double percentage = Math.round((double) setCount / totalSets * 100);
+
 
             categories.add(new CategoryPercentage(category, percentage));
         }
@@ -113,10 +87,77 @@ public class WorkoutService {
         int totalOtherSets = workoutSessionRepository.countAllSetsForUser(user.getId()) - totalSets;
 
         if (totalOtherSets > 0) {
-            double otherPercentage = (double) totalOtherSets / (totalOtherSets + totalSets) * 100;
-            categories.add(new CategoryPercentage("OTHER", otherPercentage));
+            double otherPercentage = Math.round((double) totalOtherSets / (totalOtherSets + totalSets) * 100);
+            categories.add(new CategoryPercentage("INNE", otherPercentage));
         }
 
         return categories;
+    }
+
+    public Page<WorkoutSessionResponseDTO> getUserWorkouts(int page, int size, String sortBy, String sortDir) {
+        User user = userService.getCurrentUser();
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
+        Page<WorkoutSession> workoutSessionPage = workoutSessionRepository.findAllByUserId(user.getId(), pageable);
+        return workoutSessionPage.map(workoutMapper::mapToResponseDTO);
+    }
+
+    public void updateWorkout(Long id, WorkoutSessionDTO workoutSessionDTO) {
+        User user = userService.getCurrentUser();
+
+        WorkoutSession existingWorkoutSession = workoutSessionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Workout session not found"));
+
+        if (!existingWorkoutSession.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You do not have permission to modify this workout session");
+        }
+
+        existingWorkoutSession.setDate(workoutSessionDTO.date());
+        existingWorkoutSession.setNote(workoutSessionDTO.note());
+
+
+        List<ExerciseSession> existingExerciseSessions = existingWorkoutSession.getExerciseSessions();
+        if (existingExerciseSessions == null) {
+            existingExerciseSessions = new ArrayList<>();
+            existingWorkoutSession.setExerciseSessions(existingExerciseSessions);
+        } else {
+            existingExerciseSessions.clear();
+        }
+
+        for (ExerciseSessionDTO esDTO : workoutSessionDTO.exerciseSessions()) {
+            Exercise exercise = exerciseRepository.findById(esDTO.exerciseId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Exercise not found"));
+
+            ExerciseSession exerciseSession = new ExerciseSession();
+            exerciseSession.setExercise(exercise);
+            exerciseSession.setWorkoutSession(existingWorkoutSession);
+
+            List<ExerciseSet> sets = esDTO.sets().stream().map(setDTO -> {
+                ExerciseSet exerciseSet = new ExerciseSet();
+                exerciseSet.setReps(setDTO.reps());
+                exerciseSet.setWeight(setDTO.weight());
+                exerciseSet.setExerciseSession(exerciseSession);
+                return exerciseSet;
+            }).collect(Collectors.toList());
+
+            exerciseSession.setSets(sets);
+
+            existingExerciseSessions.add(exerciseSession);
+        }
+
+        workoutSessionRepository.save(existingWorkoutSession);
+    }
+
+
+    public void deleteWorkout(Long id) {
+        User user = userService.getCurrentUser();
+
+        WorkoutSession existingWorkoutSession = workoutSessionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Workout session not found"));
+
+        if (!existingWorkoutSession.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You do not have permission to delete this workout session");
+        }
+
+        workoutSessionRepository.delete(existingWorkoutSession);
     }
 }

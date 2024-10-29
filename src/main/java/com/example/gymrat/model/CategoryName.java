@@ -1,12 +1,12 @@
 package com.example.gymrat.model;
 
 public enum CategoryName {
-    LEGS,
-    CHEST,
-    BACK,
+    NOGI,
+    KLATKA_PIERSIOWA,
+    PLECY,
     BICEPS,
     TRICEPS,
-    SHOULDERS,
-    ABS,
+    BARKI,
+    BRZUCH,
     OTHER
 }

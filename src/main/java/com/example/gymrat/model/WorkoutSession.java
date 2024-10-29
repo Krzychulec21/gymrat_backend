@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,8 +24,8 @@ public class WorkoutSession {
     private LocalDate date;
     private String note;
 
-    @OneToMany(mappedBy = "workoutSession", cascade = CascadeType.ALL)
-    private List<ExerciseSession> exerciseSessions;
+    @OneToMany(mappedBy = "workoutSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExerciseSession> exerciseSessions = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

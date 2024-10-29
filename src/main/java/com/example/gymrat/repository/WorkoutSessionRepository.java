@@ -1,17 +1,20 @@
 package com.example.gymrat.repository;
 
 import com.example.gymrat.model.WorkoutSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, Long> {
 
     int countAllByUserId(Long user_id);
+
+    Page<WorkoutSession> findAllByUserId(Long user_id, Pageable pageable);
 
     @Query("SELECT SUM(es.weight * es.reps) FROM ExerciseSet es " +
             "JOIN es.exerciseSession exs " +

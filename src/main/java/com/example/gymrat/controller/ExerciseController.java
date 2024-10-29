@@ -1,8 +1,8 @@
 package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.exercise.CreateExerciseDTO;
+import com.example.gymrat.DTO.exercise.ExerciseInfoResponseDTO;
 import com.example.gymrat.DTO.exercise.ExerciseResponseDTO;
-import com.example.gymrat.model.Exercise;
 import com.example.gymrat.service.ExerciseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +31,10 @@ public class ExerciseController {
     public ResponseEntity<Void> saveExercise(@RequestBody CreateExerciseDTO createExerciseDTO){
         exerciseService.saveExercise(createExerciseDTO);
         return  ResponseEntity.ok().build();
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ExerciseInfoResponseDTO> getExerciseInfo(@PathVariable Long id) {
+        return ResponseEntity.ok(exerciseService.getExerciseInfo(id));
     }
 }
 

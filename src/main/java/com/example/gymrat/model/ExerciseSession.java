@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,6 @@ public class ExerciseSession {
     @JoinColumn(name = "workout_session_id", nullable = false)
     private WorkoutSession workoutSession;
 
-    @OneToMany(mappedBy = "exerciseSession", cascade = CascadeType.ALL)
-    private List<ExerciseSet> sets;
+    @OneToMany(mappedBy = "exerciseSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExerciseSet> sets = new ArrayList<>();
 }

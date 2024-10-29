@@ -4,6 +4,7 @@ import java.util.List;
 
 public record ExerciseSessionDTO(
         Long exerciseId,
+        String exerciseName,
         List<ExerciseSetDTO> sets
 ) {
 }

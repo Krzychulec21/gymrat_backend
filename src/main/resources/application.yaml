@@ -23,3 +23,8 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/google"
             authorization-grant-type: authorization_code
             client-name: Google
+  web:
+    resources:
+      static-locations: classpath:/static/
+      cache:
+        period: 3600
