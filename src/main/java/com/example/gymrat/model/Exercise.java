@@ -25,6 +25,9 @@ public class Exercise {
     @OneToOne(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
     private ExerciseInfo exerciseInfo;
 
+    @Enumerated(EnumType.STRING)
+    private DifficultyLevel difficultyLevel;
+
     public Exercise(Long id, String name, CategoryName category) {
         this.id = id;
         this.name = name;
