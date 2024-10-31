@@ -16,6 +16,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +40,7 @@ public class UserServiceTest {
 
     @Test
     public void testRegisterNewUserSuccess() {
-        RegisterRequest request = new RegisterRequest("Jan", "Kowalski", "kowal", "kowalski@wp.pl", "password");
+        RegisterRequest request = new RegisterRequest("Jan", "Kowalski", "kowal", "kowalski@wp.pl", "password",LocalDate.of(2003, 3, 3));
 
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("hashed_password");
@@ -72,7 +74,7 @@ public class UserServiceTest {
 
     @Test
     public void testRegisterUserAlreadyExistsThrowsException() {
-        RegisterRequest request = new RegisterRequest("Jan", "Kowalski", "kowal", "kowalski@wp.pl", "password");
+        RegisterRequest request = new RegisterRequest("Jan", "Kowalski", "kowal", "kowalski@wp.pl", "password", LocalDate.of(2003, 3, 3));
 
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(new User()));
 

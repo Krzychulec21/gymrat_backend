@@ -64,7 +64,10 @@ public class ExerciseService {
 
         return new ExerciseInfoResponseDTO(
                 new ArrayList<>(exerciseInfo.getDescription()),
-                exerciseInfo.getVideoId());
+                exerciseInfo.getVideoId(),
+                exerciseInfo.getDifficultyLevel(),
+                exerciseInfo.getExercise().getName()
+        );
     }
 
 }

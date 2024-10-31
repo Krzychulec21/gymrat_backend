@@ -25,6 +25,8 @@ public class TrainingPlan {
     private String name;
     private String description;
 
+    private Integer difficultyLevel;
+
     @ManyToOne
     @JoinColumn(name = "author_id")
     private User author;

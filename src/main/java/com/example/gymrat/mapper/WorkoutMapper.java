@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 public class WorkoutMapper {
 
-    private final ExerciseRepository exerciseRepository;
+    private final ExerciseRepository exerciseRepository; //It's not recommended to use repository in mapper (I should change this)
 
     public WorkoutSession mapToEntity(WorkoutSessionDTO workoutSessionDTO) {
         WorkoutSession workoutSession = new WorkoutSession();

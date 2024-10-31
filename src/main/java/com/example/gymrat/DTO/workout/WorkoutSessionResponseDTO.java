@@ -7,7 +7,7 @@ public record WorkoutSessionResponseDTO(
         Long id,
         LocalDate date,
         String note,
-        int numberOfExercises,
+        Integer numberOfExercises,
         String mainCategory,
         List<ExerciseSessionDTO> exerciseSessions
 ) {

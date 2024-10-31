@@ -168,7 +168,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void addExercises() {
         // LEGS
         ExerciseInfo squatInfo = new ExerciseInfo();
-        squatInfo.setVideoId("xqvCmoLULNY");
+        squatInfo.setVideoId("Wv7KejSwEvQ");
         squatInfo.setDescription(Arrays.asList(
                 "Ustaw stopy na szerokość barków, palce skierowane lekko na zewnątrz.",
                 "Utrzymuj klatkę piersiową w górze i patrz przed siebie.",
@@ -176,9 +176,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Schodź w dół aż uda będą równoległe do podłoża lub niżej.",
                 "Wróć do pozycji wyjściowej, prostując nogi i napinając pośladki."
         ));
+        squatInfo.setDifficultyLevel(3);
 
         ExerciseInfo lungesInfo = new ExerciseInfo();
-        lungesInfo.setVideoId("wrwwXE_x-pQ");
+        lungesInfo.setVideoId("WIlpzl61YXk");
         lungesInfo.setDescription(Arrays.asList(
                 "Stój prosto z nogami rozstawionymi na szerokość bioder.",
                 "Zrób duży krok do przodu jedną nogą.",
@@ -186,9 +187,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Wróć do pozycji wyjściowej, odpychając się przednią stopą.",
                 "Powtórz na drugą nogę."
         ));
+        lungesInfo.setDifficultyLevel(2);
 
         ExerciseInfo legPressInfo = new ExerciseInfo();
-        legPressInfo.setVideoId("BI32qWAjSzc");
+        legPressInfo.setVideoId("KbZCkI_WzWY");
         legPressInfo.setDescription(Arrays.asList(
                 "Usiądź na maszynie do wyciskania nogami i oprzyj stopy na platformie.",
                 "Ustaw stopy na szerokość barków.",
@@ -196,9 +198,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Zginaj kolana, opuszczając platformę w kontrolowany sposób.",
                 "Wypchnij platformę do góry, prostując nogi, ale nie blokując kolan."
         ));
+        legPressInfo.setDifficultyLevel(1);
 
         ExerciseInfo legCurlInfo = new ExerciseInfo();
-        legCurlInfo.setVideoId("xFvmc42YfMQ");
+        legCurlInfo.setVideoId("dXc_dkkemOc");
         legCurlInfo.setDescription(Arrays.asList(
                 "Połóż się na maszynie do uginania nóg leżąc na brzuchu.",
                 "Ustaw wałek nad kostkami.",
@@ -206,9 +209,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Zatrzymaj ruch na chwilę na górze.",
                 "Powoli opuszczaj nogi do pozycji wyjściowej."
         ));
+        legCurlInfo.setDifficultyLevel(1);
 
         ExerciseInfo calfRaiseInfo = new ExerciseInfo();
-        calfRaiseInfo.setVideoId("ydPylCo-T7U");
+        calfRaiseInfo.setVideoId("Wri0VppFWCY");
         calfRaiseInfo.setDescription(Arrays.asList(
                 "Stań na platformie maszyny do wspięć na palce, stopy na szerokość bioder.",
                 "Opuszczaj pięty poniżej poziomu platformy, rozciągając łydki.",
@@ -216,56 +220,62 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Zatrzymaj ruch na chwilę na górze.",
                 "Powoli opuszczaj pięty do pozycji wyjściowej."
         ));
+        calfRaiseInfo.setDifficultyLevel(2);
 
         // CHEST
         ExerciseInfo benchPressInfo = new ExerciseInfo();
-        benchPressInfo.setVideoId("3R0SOJ3alTA");
+        benchPressInfo.setVideoId("8_33og5lN-Y");
         benchPressInfo.setDescription(Arrays.asList(
                 "Połóż się na ławce, nogi ustawione stabilnie na podłożu.",
                 "Chwyć sztangę na szerokość barków i unieś ją nad klatką piersiową.",
                 "Opuść sztangę powoli do klatki, zginając łokcie.",
                 "Wypchnij sztangę do góry, prostując ramiona."
         ));
+        benchPressInfo.setDifficultyLevel(2);
 
         ExerciseInfo inclineDumbbellPressInfo = new ExerciseInfo();
-        inclineDumbbellPressInfo.setVideoId("CnGWry8yekI");
+        inclineDumbbellPressInfo.setVideoId("C06qMsCzjQ8");
         inclineDumbbellPressInfo.setDescription(Arrays.asList(
                 "Ustaw ławkę pod kątem 30-45 stopni.",
                 "Połóż się na ławce z hantlami w dłoniach na wysokości klatki piersiowej.",
                 "Wypchnij hantle do góry, prostując ramiona.",
                 "Powoli opuszczaj hantle do pozycji wyjściowej."
         ));
+        inclineDumbbellPressInfo.setDifficultyLevel(3);
 
         ExerciseInfo chestFlyInfo = new ExerciseInfo();
-        chestFlyInfo.setVideoId("http://localhost:8080/images/chestfly.jpg");
+        chestFlyInfo.setVideoId("BiYKN3uBpOQ");
         chestFlyInfo.setDescription(Arrays.asList(
                 "Połóż się na ławce z hantlami trzymanymi nad klatką piersiową, ramiona lekko zgięte.",
                 "Rozłóż ramiona na boki, opuszczając hantle w kontrolowany sposób.",
                 "Poczuj rozciąganie w mięśniach klatki piersiowej.",
                 "Przywiedź ramiona z powrotem do pozycji wyjściowej."
         ));
+        chestFlyInfo.setDifficultyLevel(3);
 
         ExerciseInfo pushUpsInfo = new ExerciseInfo();
-        pushUpsInfo.setVideoId("http://localhost:8080/images/pushups.jpg");
+        pushUpsInfo.setVideoId("jBpX70SayRU");
         pushUpsInfo.setDescription(Arrays.asList(
                 "Przyjmij pozycję deski, dłonie na szerokość barków.",
                 "Utrzymuj ciało prosto od głowy do pięt.",
                 "Zginaj łokcie, opuszczając ciało w kierunku podłogi.",
                 "Wypchnij ciało do góry, prostując ramiona."
         ));
+        pushUpsInfo.setDifficultyLevel(1);
 
         ExerciseInfo dipsInfo = new ExerciseInfo();
-        dipsInfo.setVideoId("http://localhost:8080/images/dips.jpg");
+        dipsInfo.setVideoId("wLR8VJJk7W8");
         dipsInfo.setDescription(Arrays.asList(
                 "Chwyć poręcze równoległe i unieś ciało, prostując ramiona.",
                 "Zginaj łokcie, opuszczając ciało w dół, utrzymując tułów lekko pochylony do przodu.",
                 "Schodź w dół, aż ramiona będą równoległe do podłoża.",
                 "Wypchnij ciało do góry, prostując ramiona."
         ));
+        dipsInfo.setDifficultyLevel(2);
 
 // BACK
         ExerciseInfo deadliftInfo = new ExerciseInfo();
-        deadliftInfo.setVideoId("http://localhost:8080/images/deadlift.jpg");
+        deadliftInfo.setVideoId("0_igODjLiXM");
         deadliftInfo.setDescription(Arrays.asList(
                 "Ustaw stopy pod sztangą na szerokość bioder.",
                 "Pochyl się i chwyć sztangę nachwytem lub chwytem mieszanym.",
@@ -273,27 +283,30 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Prostuj nogi i tułów jednocześnie, unosząc sztangę wzdłuż ciała.",
                 "Wróć do pozycji wyjściowej, kontrolując ruch w dół."
         ));
+        deadliftInfo.setDifficultyLevel(4);
 
         ExerciseInfo pullUpsInfo = new ExerciseInfo();
-        pullUpsInfo.setVideoId("http://localhost:8080/images/pullups.jpg");
+        pullUpsInfo.setVideoId("ZgK85mzxm5Y");
         pullUpsInfo.setDescription(Arrays.asList(
                 "Chwyć drążek nachwytem na szerokość barków lub szerzej.",
                 "Wisząc swobodnie, napnij mięśnie grzbietu.",
                 "Podciągnij ciało, aż broda znajdzie się nad drążkiem.",
                 "Powoli opuść ciało do pozycji wyjściowej."
         ));
+        pullUpsInfo.setDifficultyLevel(1);
 
         ExerciseInfo latPulldownInfo = new ExerciseInfo();
-        latPulldownInfo.setVideoId("http://localhost:8080/images/latpulldown.jpg");
+        latPulldownInfo.setVideoId("NqD6Mh_zrzY");
         latPulldownInfo.setDescription(Arrays.asList(
                 "Usiądź przy maszynie do ściągania drążka.",
                 "Chwyć drążek nachwytem na szerokość barków lub szerzej.",
                 "Ściągnij drążek w dół do klatki piersiowej, napinając mięśnie grzbietu.",
                 "Powoli pozwól drążkowi wrócić do pozycji wyjściowej."
         ));
+        latPulldownInfo.setDifficultyLevel(2);
 
         ExerciseInfo bentOverRowInfo = new ExerciseInfo();
-        bentOverRowInfo.setVideoId("http://localhost:8080/images/bentoverrow.jpg");
+        bentOverRowInfo.setVideoId("KFVOo0eLvkI");
         bentOverRowInfo.setDescription(Arrays.asList(
                 "Stań z nogami na szerokość bioder, lekko ugięte kolana.",
                 "Pochyl tułów do przodu, utrzymując plecy proste.",
@@ -301,9 +314,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Przyciągnij sztangę do brzucha, zginając łokcie.",
                 "Powoli opuść sztangę do pozycji wyjściowej."
         ));
+        bentOverRowInfo.setDifficultyLevel(3);
 
         ExerciseInfo tBarRowInfo = new ExerciseInfo();
-        tBarRowInfo.setVideoId("http://localhost:8080/images/tbarrow.jpg");
+        tBarRowInfo.setVideoId("yPis7nlbqdY");
         tBarRowInfo.setDescription(Arrays.asList(
                 "Stań nad sztangą T-Bar, stopy na szerokość bioder.",
                 "Pochyl się do przodu, plecy proste.",
@@ -311,10 +325,11 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Przyciągnij uchwyt do klatki piersiowej, zginając łokcie.",
                 "Powoli opuść uchwyt do pozycji wyjściowej."
         ));
+        tBarRowInfo.setDifficultyLevel(4);
 
 // BICEPS
         ExerciseInfo barbellCurlInfo = new ExerciseInfo();
-        barbellCurlInfo.setVideoId("http://localhost:8080/images/barbellcurl.jpg");
+        barbellCurlInfo.setVideoId("wHbgdQ5rS7g");
         barbellCurlInfo.setDescription(Arrays.asList(
                 "Stań prosto, stopy na szerokość bioder, trzymając sztangę podchwytem.",
                 "Utrzymuj łokcie blisko ciała.",
@@ -323,8 +338,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Powoli opuszczaj sztangę do pozycji wyjściowej."
         ));
 
+        barbellCurlInfo.setDifficultyLevel(1);
+
         ExerciseInfo dumbbellCurlInfo = new ExerciseInfo();
-        dumbbellCurlInfo.setVideoId("http://localhost:8080/images/dumbbellcurl.jpg");
+        dumbbellCurlInfo.setVideoId("RTYQSbHTwOg");
         dumbbellCurlInfo.setDescription(Arrays.asList(
                 "Stań prosto z hantlami w dłoniach, ramiona wzdłuż ciała.",
                 "Utrzymuj łokcie blisko ciała.",
@@ -332,9 +349,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Napnij bicepsy na górze ruchu.",
                 "Powoli opuszczaj hantle do pozycji wyjściowej."
         ));
+        dumbbellCurlInfo.setDifficultyLevel(1);
 
         ExerciseInfo concentrationCurlInfo = new ExerciseInfo();
-        concentrationCurlInfo.setVideoId("http://localhost:8080/images/concentrationcurl.jpg");
+        concentrationCurlInfo.setVideoId("t-dVA6SGLGU");
         concentrationCurlInfo.setDescription(Arrays.asList(
                 "Usiądź na ławce, nogi rozstawione szeroko.",
                 "Oprzyj łokieć prawej ręki o wewnętrzną część prawego uda.",
@@ -343,9 +361,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Powoli opuszczaj hantlę do pozycji wyjściowej.",
                 "Powtórz na drugą rękę."
         ));
+        concentrationCurlInfo.setDifficultyLevel(2);
 
         ExerciseInfo hammerCurlInfo = new ExerciseInfo();
-        hammerCurlInfo.setVideoId("http://localhost:8080/images/hammercurl.jpg");
+        hammerCurlInfo.setVideoId("s_ubLsRZ59I");
         hammerCurlInfo.setDescription(Arrays.asList(
                 "Stań prosto z hantlami w dłoniach, uchwyt młotkowy (kciuki skierowane do góry).",
                 "Utrzymuj łokcie blisko ciała.",
@@ -353,9 +372,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Napnij bicepsy na górze ruchu.",
                 "Powoli opuszczaj hantle do pozycji wyjściowej."
         ));
+        hammerCurlInfo.setDifficultyLevel(1);
 
         ExerciseInfo preacherCurlInfo = new ExerciseInfo();
-        preacherCurlInfo.setVideoId("http://localhost:8080/images/preachercurl.jpg");
+        preacherCurlInfo.setVideoId("VeSNU4DBkPw");
         preacherCurlInfo.setDescription(Arrays.asList(
                 "Usiądź na maszynie do uginania przedramion na modlitewniku.",
                 "Oprzyj ramiona na poduszce, chwytając sztangę podchwytem.",
@@ -363,10 +383,11 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Napnij bicepsy na górze ruchu.",
                 "Powoli opuszczaj sztangę do pozycji wyjściowej."
         ));
+        preacherCurlInfo.setDifficultyLevel(1);
 
 // TRICEPS
         ExerciseInfo tricepsPushdownInfo = new ExerciseInfo();
-        tricepsPushdownInfo.setVideoId("http://localhost:8080/images/tricepspushdown.jpg");
+        tricepsPushdownInfo.setVideoId("1OqWx8xmeRs");
         tricepsPushdownInfo.setDescription(Arrays.asList(
                 "Stań przed wyciągiem górnym, chwyć uchwyt nachwytem.",
                 "Utrzymuj łokcie blisko ciała.",
@@ -374,9 +395,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Napnij tricepsy na dole ruchu.",
                 "Powoli zginaj łokcie, wracając do pozycji wyjściowej."
         ));
+        tricepsPushdownInfo.setDifficultyLevel(2);
 
         ExerciseInfo overheadTricepsExtensionInfo = new ExerciseInfo();
-        overheadTricepsExtensionInfo.setVideoId("http://localhost:8080/images/overheadtricepsextension.jpg");
+        overheadTricepsExtensionInfo.setVideoId("J2aSNEdb7qY");
         overheadTricepsExtensionInfo.setDescription(Arrays.asList(
                 "Stań prosto, trzymając hantlę oburącz nad głową.",
                 "Utrzymuj ramiona prosto w górze, łokcie blisko głowy.",
@@ -384,18 +406,20 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Prostuj ramiona, unosząc hantlę z powrotem nad głowę.",
                 "Napnij tricepsy na górze ruchu."
         ));
+        overheadTricepsExtensionInfo.setDifficultyLevel(3);
 
         ExerciseInfo skullCrusherInfo = new ExerciseInfo();
-        skullCrusherInfo.setVideoId("http://localhost:8080/images/skullcrusher.jpg");
+        skullCrusherInfo.setVideoId("UlLhdI3KOTg");
         skullCrusherInfo.setDescription(Arrays.asList(
                 "Połóż się na ławce, trzymając sztangę prosto nad klatką piersiową.",
                 "Utrzymuj ramiona nieruchomo, zginaj łokcie, opuszczając sztangę w kierunku czoła.",
                 "Prostuj łokcie, unosząc sztangę z powrotem do pozycji wyjściowej.",
                 "Napnij tricepsy na górze ruchu."
         ));
+        skullCrusherInfo.setDifficultyLevel(3);
 
         ExerciseInfo tricepsDipsInfo = new ExerciseInfo();
-        tricepsDipsInfo.setVideoId("http://localhost:8080/images/tricepsdips.jpg");
+        tricepsDipsInfo.setVideoId("flSs1CfQS6k");
         tricepsDipsInfo.setDescription(Arrays.asList(
                 "Usiądź na krawędzi ławki, dłonie po bokach bioder.",
                 "Wyprostuj nogi przed sobą.",
@@ -403,101 +427,103 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Zginaj łokcie, opuszczając ciało w dół.",
                 "Prostuj ramiona, unosząc ciało z powrotem do góry."
         ));
+        tricepsDipsInfo.setDifficultyLevel(2);
 
         ExerciseInfo closeGripBenchPressInfo = new ExerciseInfo();
-        closeGripBenchPressInfo.setVideoId("http://localhost:8080/images/closegripbenchpress.jpg");
+        closeGripBenchPressInfo.setVideoId("b3qYZeDywgI");
         closeGripBenchPressInfo.setDescription(Arrays.asList(
                 "Połóż się na ławce, chwyć sztangę wąsko (ok. 15 cm między dłońmi).",
                 "Unieś sztangę nad klatką piersiową.",
                 "Opuść sztangę do dolnej części klatki piersiowej, zginając łokcie blisko ciała.",
                 "Wypchnij sztangę do góry, prostując ramiona."
         ));
+        closeGripBenchPressInfo.setDifficultyLevel(2);
 
 // SHOULDERS
         ExerciseInfo shoulderPressInfo = new ExerciseInfo();
-        shoulderPressInfo.setVideoId("http://localhost:8080/images/shoulderpress.jpg");
+        shoulderPressInfo.setVideoId("EC7NuM2gmB0");
         shoulderPressInfo.setDescription(Arrays.asList(
                 "Usiądź na ławce z oparciem, trzymając hantle na wysokości ramion.",
                 "Wypchnij hantle do góry, prostując ramiona.",
                 "Powoli opuszczaj hantle do pozycji wyjściowej.",
                 "Utrzymuj plecy proste i napięte mięśnie brzucha."
         ));
+        shoulderPressInfo.setDifficultyLevel(3);
 
         ExerciseInfo lateralRaiseInfo = new ExerciseInfo();
-        lateralRaiseInfo.setVideoId("http://localhost:8080/images/lateralraise.jpg");
+        lateralRaiseInfo.setVideoId("EC7NuM2gmB0");
         lateralRaiseInfo.setDescription(Arrays.asList(
                 "Stań prosto z hantlami w dłoniach, ramiona wzdłuż ciała.",
                 "Unosź ramiona na boki, aż będą równoległe do podłoża.",
                 "Utrzymuj lekkie zgięcie w łokciach.",
                 "Powoli opuszczaj ramiona do pozycji wyjściowej."
         ));
+        lateralRaiseInfo.setDifficultyLevel(3);
 
         ExerciseInfo frontRaiseInfo = new ExerciseInfo();
-        frontRaiseInfo.setVideoId("http://localhost:8080/images/frontraise.jpg");
+        frontRaiseInfo.setVideoId("tzNuowdBtUw");
         frontRaiseInfo.setDescription(Arrays.asList(
                 "Stań prosto z hantlami w dłoniach przed udami.",
-                "Unosź jedno ramię do przodu, aż będzie równoległe do podłoża.",
+                "Unoś ramię do przodu, aż będzie równoległe do podłoża.",
                 "Powoli opuszczaj ramię do pozycji wyjściowej.",
                 "Powtórz na drugą rękę."
         ));
+        frontRaiseInfo.setDifficultyLevel(3);
 
         ExerciseInfo arnoldPressInfo = new ExerciseInfo();
-        arnoldPressInfo.setVideoId("http://localhost:8080/images/arnoldpress.jpg");
+        arnoldPressInfo.setVideoId("HId_yBfTGgQ");
         arnoldPressInfo.setDescription(Arrays.asList(
                 "Usiądź na ławce z oparciem, trzymając hantle przed klatką piersiową, dłonie skierowane do ciała.",
                 "Wypchnij hantle do góry, jednocześnie obracając nadgarstki, aż dłonie będą skierowane na zewnątrz.",
                 "Powoli opuszczaj hantle do pozycji wyjściowej, obracając nadgarstki.",
                 "Utrzymuj kontrolowany ruch przez cały czas."
         ));
-
-        ExerciseInfo reversePecDeckInfo = new ExerciseInfo();
-        reversePecDeckInfo.setVideoId("http://localhost:8080/images/reversepecdeck.jpg");
-        reversePecDeckInfo.setDescription(Arrays.asList(
-                "Usiądź na maszynie do rozpiętek odwrotnych, twarzą do oparcia.",
-                "Chwyć uchwyty, ramiona na wysokości barków.",
-                "Rozszerzaj ramiona na boki, ściskając łopatki.",
-                "Powoli wracaj do pozycji wyjściowej."
-        ));
+        arnoldPressInfo.setDifficultyLevel(3);
 
 // ABS
         ExerciseInfo crunchesInfo = new ExerciseInfo();
-        crunchesInfo.setVideoId("http://localhost:8080/images/crunches.jpg");
+        crunchesInfo.setVideoId("XgQXdzxE2hU");
         crunchesInfo.setDescription(Arrays.asList(
                 "Połóż się na plecach, kolana ugięte, stopy na podłodze.",
                 "Ręce skrzyżowane na klatce piersiowej lub za głową.",
                 "Napnij mięśnie brzucha i unieś górną część tułowia.",
                 "Powoli opuszczaj tułów do pozycji wyjściowej."
         ));
+        crunchesInfo.setDifficultyLevel(1);
 
         ExerciseInfo legRaiseInfo = new ExerciseInfo();
-        legRaiseInfo.setVideoId("http://localhost:8080/images/legraise.jpg");
+        legRaiseInfo.setVideoId("_zEXEoVDxvk");
         legRaiseInfo.setDescription(Arrays.asList(
                 "Połóż się na plecach, ręce wzdłuż ciała.",
                 "Unieś nogi prosto w górę, stopy skierowane do sufitu.",
                 "Powoli opuszczaj nogi, nie dotykając podłogi.",
                 "Powtórz ruch unoszenia nóg."
         ));
+        legRaiseInfo.setDifficultyLevel(1);
+
 
         ExerciseInfo plankInfo = new ExerciseInfo();
-        plankInfo.setVideoId("http://localhost:8080/images/plank.jpg");
+        plankInfo.setVideoId("qN9skuMi6es");
         plankInfo.setDescription(Arrays.asList(
                 "Przyjmij pozycję jak do pompki, opierając się na przedramionach.",
                 "Utrzymuj ciało prosto od głowy do pięt.",
                 "Napnij mięśnie brzucha i pośladków.",
                 "Utrzymaj pozycję przez określony czas."
         ));
+        plankInfo.setDifficultyLevel(2);
 
         ExerciseInfo russianTwistInfo = new ExerciseInfo();
-        russianTwistInfo.setVideoId("http://localhost:8080/images/russiantwist.jpg");
+        russianTwistInfo.setVideoId("AwoiVWAi4bo");
         russianTwistInfo.setDescription(Arrays.asList(
                 "Usiądź na podłodze, kolana ugięte, stopy uniesione.",
                 "Pochyl tułów lekko do tyłu, utrzymując równowagę.",
                 "Trzymaj ręce złączone przed sobą.",
                 "Skręcaj tułów w lewo i prawo, dotykając podłogi po obu stronach."
         ));
+        russianTwistInfo.setDifficultyLevel(2);
 
         ExerciseInfo bicycleCrunchInfo = new ExerciseInfo();
-        bicycleCrunchInfo.setVideoId("http://localhost:8080/images/bicyclecrunch.jpg");
+        bicycleCrunchInfo.setVideoId("UFxFYg0sdIw");
         bicycleCrunchInfo.setDescription(Arrays.asList(
                 "Połóż się na plecach, ręce za głową.",
                 "Unieś nogi zgięte w kolanach pod kątem 90 stopni.",
@@ -505,6 +531,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Zmień stronę, przyciągając prawe kolano do lewego łokcia.",
                 "Kontynuuj naprzemienny ruch."
         ));
+        bicycleCrunchInfo.setDifficultyLevel(2);
 
 
         List<Exercise> exercises = Arrays.asList(
@@ -548,7 +575,6 @@ public class DatabaseSeeder implements CommandLineRunner {
                 new Exercise(null, "Wznosy bokiem", CategoryName.BARKI, lateralRaiseInfo),
                 new Exercise(null, "Wznosy przodem", CategoryName.BARKI, frontRaiseInfo),
                 new Exercise(null, "Arnoldki", CategoryName.BARKI, arnoldPressInfo),
-                new Exercise(null, "Rozpiętki w siadzie na maszynie", CategoryName.BARKI, reversePecDeckInfo),
 
                 // ABS
                 new Exercise(null, "Brzuszki", CategoryName.BRZUCH, crunchesInfo),
@@ -597,6 +623,8 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         workoutSessionRepository.save(workoutSession);
     }
+
+
 
 
 }

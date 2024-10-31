@@ -30,4 +30,13 @@ public class ExerciseInfo {
     @OneToOne
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
+
+    private Integer difficultyLevel;
+
+    public void setDifficultyLevel(Integer difficultyLevel) {
+        if (difficultyLevel < 1 || difficultyLevel > 5){
+            throw new IllegalArgumentException("Difficulty level must be between 1 and 5");
+        }
+        this.difficultyLevel = difficultyLevel;
+    }
 }

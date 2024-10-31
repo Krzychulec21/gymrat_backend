@@ -4,5 +4,7 @@ import java.util.List;
 
 public record ExerciseInfoResponseDTO (
         List<String> description,
-        String videoId
+        String videoId,
+        Integer difficultyLevel,
+        String exerciseName
 ) {}
