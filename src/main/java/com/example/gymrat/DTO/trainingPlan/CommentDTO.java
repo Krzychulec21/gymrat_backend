@@ -1,6 +1,6 @@
 package com.example.gymrat.DTO.trainingPlan;
 
-public record CreateCommentDTO(
+public record CommentDTO(
         String content
 ) {
 }

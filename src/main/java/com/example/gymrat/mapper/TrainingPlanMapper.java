@@ -1,10 +1,8 @@
 package com.example.gymrat.mapper;
 
-import com.example.gymrat.DTO.trainingPlan.CommentResponseDTO;
-import com.example.gymrat.DTO.trainingPlan.CreateTrainingPlanDTO;
-import com.example.gymrat.DTO.trainingPlan.ExerciseInPlanDTO;
-import com.example.gymrat.DTO.trainingPlan.TrainingPlanResponseDTO;
+import com.example.gymrat.DTO.trainingPlan.*;
 import com.example.gymrat.exception.ResourceNotFoundException;
+import com.example.gymrat.model.CategoryName;
 import com.example.gymrat.model.Exercise;
 import com.example.gymrat.model.ExerciseInPlan;
 import com.example.gymrat.model.TrainingPlan;
@@ -12,7 +10,9 @@ import com.example.gymrat.repository.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -22,6 +22,8 @@ public class TrainingPlanMapper {
         trainingPlan.setName(dto.name());
         trainingPlan.setDescription(dto.description());
 
+        Set<CategoryName> categories = new HashSet<>();
+
         List<ExerciseInPlan> exercisesInPlan = dto.exercises().stream().map(exerciseInPlanDTO -> {
             ExerciseInPlan exerciseInPlan = new ExerciseInPlan();
 
@@ -30,6 +32,7 @@ public class TrainingPlanMapper {
                     .findFirst()
                     .orElseThrow(() -> new ResourceNotFoundException("Exercise not found"));
 
+            categories.add(exercise.getCategory());
             exerciseInPlan.setExercise(exercise);
             exerciseInPlan.setCustomInstructions(exerciseInPlanDTO.customInstructions());
             exerciseInPlan.setTrainingPlan(trainingPlan);
@@ -37,15 +40,16 @@ public class TrainingPlanMapper {
             return exerciseInPlan;
         }).toList();
 
+        trainingPlan.setCategories(categories);
         trainingPlan.setExercisesInPlan(exercisesInPlan);
 
         return trainingPlan;
     }
 
     public TrainingPlanResponseDTO mapToResponseDTO(TrainingPlan trainingPlan, int likeCount) {
-        List<ExerciseInPlanDTO> exercises = trainingPlan.getExercisesInPlan().stream().map(exerciseInPlan ->
-                new ExerciseInPlanDTO(
-                        exerciseInPlan.getId(),
+        List<ExerciseInPlanResponseDTO> exercises = trainingPlan.getExercisesInPlan().stream().map(exerciseInPlan ->
+                new ExerciseInPlanResponseDTO(
+                        exerciseInPlan.getExercise().getId(),
                         exerciseInPlan.getExercise().getName(),
                         exerciseInPlan.getCustomInstructions()
                 )).toList();

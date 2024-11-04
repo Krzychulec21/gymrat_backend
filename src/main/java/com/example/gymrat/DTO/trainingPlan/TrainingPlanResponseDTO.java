@@ -12,7 +12,7 @@ public record TrainingPlanResponseDTO(
         String authorNickname,
         Integer difficultyLevel,
         Set<CategoryName> categories,
-        List<ExerciseInPlanDTO> exercises,
+        List<ExerciseInPlanResponseDTO> exercises,
         List<CommentResponseDTO> comments,
         Integer likeCount
 ) {}

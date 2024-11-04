@@ -52,15 +52,11 @@ public class FriendController {
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(defaultValue = "18") int minAge,
             @RequestParam(defaultValue = "50") int maxAge) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Page<FriendResponseDTO> friendsPage = friendService.getFriends(email, page, size, sortBy, sortDir, minAge, maxAge);
+        Page<FriendResponseDTO> friendsPage = friendService.getFriends(page, size, sortBy, sortDir, minAge, maxAge);
         return ResponseEntity.ok(friendsPage);
     }
 
-    @Operation(summary = "Get pending friend requests", description = "Retrieves the list of pending friend requests.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pending friend requests retrieved successfully.")
-    })
+
     @GetMapping("/pending-requests")
     public ResponseEntity<List<PendingFriendRequestDTO>> getPendingRequests() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

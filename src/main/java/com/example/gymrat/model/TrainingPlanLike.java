@@ -17,7 +17,7 @@ public class TrainingPlanLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean isLike; //true = like false=dislike
+    private Boolean isLike; //true = like false=dislike
 
     @ManyToOne
     @JoinColumn(name = "user_id")

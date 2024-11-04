@@ -16,17 +16,17 @@ import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/personal-info")
 public class PersonalInfoController {
 
     private final PersonalInfoService personalInfoService;
 
-    @GetMapping("personal-info")
+    @GetMapping("")
     public ResponseEntity<PersonalInfoResponseDTO> getPersonalInfo() {
         return ResponseEntity.ok(personalInfoService.getPersonalInfo());
     }
 
-    @PatchMapping("/personal-info")
+    @PatchMapping("")
     public ResponseEntity<PersonalInfoResponseDTO> updatePersonalInfo(@RequestBody PersonalInfoRequestDTO requestDTO) {
         return ResponseEntity.ok(personalInfoService.updatePersonalInfo(requestDTO));
     }

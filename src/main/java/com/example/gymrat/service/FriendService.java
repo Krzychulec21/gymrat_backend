@@ -29,6 +29,7 @@ public class FriendService {
     private final FriendRequestRepository friendRequestRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final UserService userService;
 
     public void sendFriendRequest(String senderEmail, String recipientEmail) {
         User sender = userRepository.findByEmail(senderEmail).orElseThrow();
@@ -70,9 +71,8 @@ public class FriendService {
         friendRequestRepository.save(request);
     }
 
-    public Page<FriendResponseDTO> getFriends(String email, int page, int size, String sortBy, String sortDir, int minAge, int maxAge) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public Page<FriendResponseDTO> getFriends(int page, int size, String sortBy, String sortDir, int minAge, int maxAge) {
+        User user = userService.getCurrentUser();
 
         Sort.Direction direction = Sort.Direction.fromString(sortDir);
         Sort sort = Sort.by(direction, sortBy.equals("latestMessage") ? "latestMessageTimestamp" : sortBy);
@@ -91,14 +91,6 @@ public class FriendService {
                     latestMessageTimestamp
             );
         });
-    }
-
-    private int compareUsers(User u1, User u2, String sortBy) {
-        return switch (sortBy) {
-            case "firstName" -> u1.getFirstName().compareTo(u2.getFirstName());
-            case "lastName" -> u1.getLastName().compareTo(u2.getLastName());
-            default -> 0;
-        };
     }
 
 
