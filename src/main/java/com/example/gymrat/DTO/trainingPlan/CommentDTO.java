@@ -1,6 +1,8 @@
 package com.example.gymrat.DTO.trainingPlan;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CommentDTO(
-        String content
+        @NotBlank String content
 ) {
 }

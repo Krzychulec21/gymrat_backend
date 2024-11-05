@@ -1,6 +1,8 @@
 package com.example.gymrat.DTO.trainingPlan;
 
+import jakarta.validation.constraints.NotNull;
+
 public record LikeDTO(
-        boolean isLike // true-like false-dislike
+        @NotNull Boolean isLike // true-like false-dislike
 ) {
 }

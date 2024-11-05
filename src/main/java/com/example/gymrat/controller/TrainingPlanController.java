@@ -1,11 +1,10 @@
 package com.example.gymrat.controller;
 
-import com.example.gymrat.DTO.trainingPlan.CommentDTO;
-import com.example.gymrat.DTO.trainingPlan.CreateTrainingPlanDTO;
-import com.example.gymrat.DTO.trainingPlan.LikeDTO;
-import com.example.gymrat.DTO.trainingPlan.TrainingPlanResponseDTO;
+import com.example.gymrat.DTO.trainingPlan.*;
 import com.example.gymrat.service.TrainingPlanService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ public class TrainingPlanController {
     private final TrainingPlanService trainingPlanService;
 
     @PostMapping("")
-    public ResponseEntity<Void> saveTrainingPlan(@RequestBody CreateTrainingPlanDTO dto) {
+    public ResponseEntity<Void> saveTrainingPlan(@Valid @RequestBody CreateTrainingPlanDTO dto) {
         trainingPlanService.saveTrainingPlan(dto);
         return ResponseEntity.ok().build();
     }
@@ -27,26 +26,36 @@ public class TrainingPlanController {
         return ResponseEntity.ok(trainingPlanService.getTrainingPlanById(id));
     }
 
-    @PostMapping("/{id}/comment")
-    public ResponseEntity<Void> addComment(@PathVariable Long id, @RequestBody CommentDTO dto) {
-        trainingPlanService.addComment(id, dto);
+    @GetMapping("")
+    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getAllTrainingPlans(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
+        return ResponseEntity.ok(trainingPlanService.getAllTrainingPlans(page, size, sortField, sortDirection));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getTrainingPlansByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
+        return ResponseEntity.ok(trainingPlanService.getTrainingPlansByUser(userId, page, size, sortField, sortDirection));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateTrainingPlan(@PathVariable Long id, @Valid @RequestBody UpdateTrainingPlanDTO dto) {
+        trainingPlanService.updateTrainingPlan(id, dto);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/like")
-    public ResponseEntity<Void> addLike(@PathVariable Long id, @RequestBody LikeDTO dto) {
-        trainingPlanService.addLike(id, dto);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTrainingPlan(@PathVariable Long id) {
+        trainingPlanService.deleteTrainingPlan(id);
         return ResponseEntity.ok().build();
     }
-
-    @PutMapping("/{planId}/comment/{commentId}")
-    public ResponseEntity<Void> updateComment(
-            @PathVariable Long planId,
-            @PathVariable Long commentId,
-            @RequestBody CommentDTO dto) {
-        trainingPlanService.updateComment(planId, commentId, dto);
-        return ResponseEntity.ok().build();
-    }
-
-
 }

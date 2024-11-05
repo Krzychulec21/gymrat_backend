@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
-public record CreateTrainingPlanDTO(
+public record UpdateTrainingPlanDTO(
         @NotBlank String name,
         String description,
         @NotEmpty List<@Valid ExerciseInPlanDTO> exercises

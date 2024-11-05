@@ -1,7 +1,8 @@
 package com.example.gymrat.DTO.trainingPlan;
+import jakarta.validation.constraints.NotNull;
 
 public record ExerciseInPlanDTO (
-    Long exerciseId,
-    String customInstructions
+        @NotNull Long exerciseId,
+        String customInstructions
 ) {
 }

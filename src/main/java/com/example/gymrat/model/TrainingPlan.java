@@ -46,6 +46,4 @@ public class TrainingPlan {
     @Column(name = "category")
     private Set<CategoryName> categories = new HashSet<>();
 
-
-
 }

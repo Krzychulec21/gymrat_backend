@@ -2,11 +2,7 @@ package com.example.gymrat.mapper;
 
 import com.example.gymrat.DTO.trainingPlan.*;
 import com.example.gymrat.exception.ResourceNotFoundException;
-import com.example.gymrat.model.CategoryName;
-import com.example.gymrat.model.Exercise;
-import com.example.gymrat.model.ExerciseInPlan;
-import com.example.gymrat.model.TrainingPlan;
-import com.example.gymrat.repository.ExerciseRepository;
+import com.example.gymrat.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +13,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Component
 public class TrainingPlanMapper {
+
     public TrainingPlan toEntity(CreateTrainingPlanDTO dto, List<Exercise> exercises) {
         TrainingPlan trainingPlan = new TrainingPlan();
         trainingPlan.setName(dto.name());
@@ -46,20 +43,12 @@ public class TrainingPlanMapper {
         return trainingPlan;
     }
 
-    public TrainingPlanResponseDTO mapToResponseDTO(TrainingPlan trainingPlan, int likeCount) {
+    public TrainingPlanResponseDTO mapToResponseDTO(TrainingPlan trainingPlan, int likeCount, List<CommentResponseDTO> comments) {
         List<ExerciseInPlanResponseDTO> exercises = trainingPlan.getExercisesInPlan().stream().map(exerciseInPlan ->
                 new ExerciseInPlanResponseDTO(
                         exerciseInPlan.getExercise().getId(),
                         exerciseInPlan.getExercise().getName(),
                         exerciseInPlan.getCustomInstructions()
-                )).toList();
-
-        List<CommentResponseDTO> comments = trainingPlan.getComments().stream().map(comment ->
-                new CommentResponseDTO(
-                        comment.getId(),
-                        comment.getContent(),
-                        comment.getAuthor().getNickname(),
-                        comment.getDateCreated()
                 )).toList();
 
         return new TrainingPlanResponseDTO(
@@ -71,6 +60,21 @@ public class TrainingPlanMapper {
                 trainingPlan.getCategories(),
                 exercises,
                 comments,
+                likeCount
+        );
+    }
+
+    public TrainingPlanSummaryDTO mapToSummaryDTO(TrainingPlan trainingPlan) {
+        int likeCount = trainingPlan.getLikes().stream()
+                .mapToInt(like -> like.getIsLike() ? 1 : -1)
+                .sum();
+
+        return new TrainingPlanSummaryDTO(
+                trainingPlan.getId(),
+                trainingPlan.getName(),
+                trainingPlan.getAuthor().getNickname(),
+                trainingPlan.getCategories(),
+                trainingPlan.getDifficultyLevel(),
                 likeCount
         );
     }
