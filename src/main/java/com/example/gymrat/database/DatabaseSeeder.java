@@ -1,6 +1,8 @@
 package com.example.gymrat.database;
 
 import com.example.gymrat.DTO.auth.RegisterRequest;
+import com.example.gymrat.DTO.trainingPlan.CreateTrainingPlanDTO;
+import com.example.gymrat.DTO.trainingPlan.ExerciseInPlanDTO;
 import com.example.gymrat.DTO.workout.ExerciseSessionDTO;
 import com.example.gymrat.DTO.workout.ExerciseSetDTO;
 import com.example.gymrat.DTO.workout.WorkoutSessionDTO;
@@ -16,8 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final WorkoutMapper workoutMapper;
+    private final TrainingPlanService trainingPlanService;
 
     @Override
     @Transactional
@@ -36,6 +38,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         addFriends();
         addExercises();
         addWorkoutSession();
+       // addTrainingPlans();
     }
 
 
@@ -625,7 +628,88 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
 
+    public void addTrainingPlans() {
+        User user = userRepository.findByEmail("kowalski@wp.pl")
+                .orElseThrow(() -> new RuntimeException("User not found: kowalski@wp.pl"));
 
+        List<Exercise> allExercises = exerciseRepository.findAll();
+        Map<String, Long> exerciseMap = new HashMap<>();
+        for (Exercise exercise : allExercises) {
+            exerciseMap.put(exercise.getName(), exercise.getId());
+        }
+
+        // Example training plans
+        CreateTrainingPlanDTO plan1 = new CreateTrainingPlanDTO(
+                "Plan Siłowy",
+                "Plan skupiający się na zwiększeniu siły mięśniowej.",
+                Arrays.asList(
+                        new ExerciseInPlanDTO(exerciseMap.get("Przysiad ze sztangą"), "3 serie x 5 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie sztangi leżąc"), "3 serie x 5 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Martwy ciąg"), "1 seria x 5 powtórzeń")
+                )
+        );
+
+        CreateTrainingPlanDTO plan2 = new CreateTrainingPlanDTO(
+                "Plan Masowy",
+                "Plan dla osób chcących zbudować masę mięśniową.",
+                Arrays.asList(
+                        new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie sztangi leżąc"), "4 serie x 8 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wiosłowanie w opadzie"), "4 serie x 8 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Przysiad ze sztangą"), "4 serie x 8 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie hantli siedząc"), "4 serie x 10 powtórzeń")
+                )
+        );
+
+        CreateTrainingPlanDTO plan3 = new CreateTrainingPlanDTO(
+                "Plan Redukcyjny",
+                "Plan dla osób chcących zredukować tkankę tłuszczową.",
+                Arrays.asList(
+                        new ExerciseInPlanDTO(exerciseMap.get("Pompki"), "3 serie x maksymalna liczba powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Podciągnięcia"), "3 serie x maksymalna liczba powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Brzuszki"), "3 serie x 20 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Przysiad ze sztangą"), "3 serie x 12 powtórzeń")
+                )
+        );
+
+        CreateTrainingPlanDTO plan4 = new CreateTrainingPlanDTO(
+                "Plan na Siłę i Masę",
+                "Zaawansowany plan łączący trening siłowy i masowy.",
+                Arrays.asList(
+                        new ExerciseInPlanDTO(exerciseMap.get("Martwy ciąg"), "5 serii x 5 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie sztangi leżąc"), "5 serii x 5 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Przysiad ze sztangą"), "5 serii x 5 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wiosłowanie T--bar"), "5 serii x 5 powtórzeń")
+                )
+        );
+
+        CreateTrainingPlanDTO plan5 = new CreateTrainingPlanDTO(
+                "Plan FBW",
+                "Trening całego ciała na jednej sesji.",
+                Arrays.asList(
+                        new ExerciseInPlanDTO(exerciseMap.get("Przysiad ze sztangą"), "3 serie x 10 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie sztangi leżąc"), "3 serie x 10 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wiosłowanie w opadzie"), "3 serie x 10 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie hantli siedząc"), "3 serie x 12 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Uginanie ramion ze sztangą"), "3 serie x 12 powtórzeń"),
+                        new ExerciseInPlanDTO(exerciseMap.get("Prostowanie ramion na wyciągu górnym"), "3 serie x 12 powtórzeń")
+                )
+        );
+
+        // Additional plans can be added similarly
+
+        List<CreateTrainingPlanDTO> plans = Arrays.asList(plan1, plan2, plan3, plan4, plan5);
+
+        // Simulate different users creating plans
+        List<User> users = userRepository.findAll();
+
+        Random random = new Random();
+
+        for (CreateTrainingPlanDTO planDTO : plans) {
+            User randomUser = users.get(random.nextInt(users.size()));
+            userService.setCurrentUser(randomUser); // Simulate as if the user is logged in
+            trainingPlanService.saveTrainingPlan(planDTO);
+        }
+    }
 
 }
 

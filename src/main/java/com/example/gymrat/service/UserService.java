@@ -108,6 +108,11 @@ public class UserService {
                 .orElseThrow(() ->  new UserNotFoundException("User not found with email: " + userEmail));
     }
 
+    public void setCurrentUser(User user) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), null, user.getAuthorities())
+        );
+    }
 
 
 
