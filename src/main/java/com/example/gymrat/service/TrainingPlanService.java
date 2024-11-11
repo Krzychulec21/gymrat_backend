@@ -5,14 +5,20 @@ import com.example.gymrat.exception.ResourceNotFoundException;
 import com.example.gymrat.mapper.TrainingPlanMapper;
 import com.example.gymrat.model.*;
 import com.example.gymrat.repository.ExerciseRepository;
+import com.example.gymrat.repository.TrainingPlanLikeRepository;
 import com.example.gymrat.repository.TrainingPlanRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -25,6 +31,7 @@ public class TrainingPlanService {
     private final ExerciseRepository exerciseRepository;
     private final CommentService commentService;
     private final LikeService likeService;
+    private final TrainingPlanLikeRepository trainingPlanLikeRepository;
 
     public void saveTrainingPlan(CreateTrainingPlanDTO dto) {
         User currentUser = userService.getCurrentUser();
@@ -48,13 +55,17 @@ public class TrainingPlanService {
     }
 
     public TrainingPlanResponseDTO getTrainingPlanById(Long id) {
+        User user = userService.getCurrentUser();
+        Optional<TrainingPlanLike> likeOptional = trainingPlanLikeRepository.findTrainingPlanLikeByUserIdAndTrainingPlanId(user.getId(), id);
+        String userReaction = likeOptional.map(like -> like.getIsLike() ? "like" : "dislike").orElse(null);
+
         TrainingPlan trainingPlan = trainingPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
 
         int likeCount = likeService.getLikeCount(id);
         List<CommentResponseDTO> comments = commentService.getComments(id, 0, Integer.MAX_VALUE, "dateCreated", "asc").getContent();
 
-        return trainingPlanMapper.mapToResponseDTO(trainingPlan, likeCount, comments);
+        return trainingPlanMapper.mapToResponseDTO(trainingPlan, likeCount, comments, userReaction);
     }
 
     public int calculateDifficultyOfTrainingPlan(TrainingPlan trainingPlan) {
@@ -68,16 +79,56 @@ public class TrainingPlanService {
         );
     }
 
-    public Page<TrainingPlanSummaryDTO> getAllTrainingPlans(int page, int size, String sortField, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortField).descending() : Sort.by(sortField).ascending();
+
+    public Page<TrainingPlanSummaryDTO> getAllTrainingPlans(
+            int page,
+            int size,
+            String sortField,
+            String sortDirection,
+            Set<CategoryName> categories,
+            List<Integer> difficultyLevels,
+            String authorNickname) {
+
+        Specification<TrainingPlan> specification = (root, query, criteriaBuilder) -> {
+            assert query != null;
+            query.distinct(true);
+            return null;
+        };
+
+        //set specification to filter
+        if (categories != null && !categories.isEmpty()) {
+            specification = specification.and((root, query, criteriaBuilder) -> {
+                return root.join("categories").in(categories);
+            });
+        }
+
+        if (difficultyLevels != null && !difficultyLevels.isEmpty()) {
+            specification = specification.and((root, query, criteriaBuilder) -> {
+                return root.get("difficultyLevel").in(difficultyLevels);
+            });
+        }
+
+        if (authorNickname != null && !authorNickname.isEmpty()) {
+            specification = specification.and((root, query, criteriaBuilder) -> {
+                return criteriaBuilder.like(
+                        root.get("author").get("nickname"),
+                        "%" + authorNickname + "%");
+            });
+        }
+
+        Sort sort = switch (sortField) {
+            case "likeCount" -> Sort.by(Sort.Direction.fromString(sortDirection), "likeCount");
+            case "difficultyLevel" -> Sort.by(Sort.Direction.fromString(sortDirection), "difficultyLevel");
+            case "name" -> Sort.by(Sort.Direction.fromString(sortDirection), "name");
+            default -> Sort.by(Sort.Direction.fromString(sortDirection), "likeCount");
+        };
 
         Pageable pageable = PageRequest.of(page, size, sort);
+        Page<TrainingPlan> trainingPlans = trainingPlanRepository.findAll(specification, pageable);
 
-        Page<TrainingPlan> trainingPlansPage = trainingPlanRepository.findAll(pageable);
-
-        return trainingPlansPage.map(trainingPlanMapper::mapToSummaryDTO);
+        return trainingPlans.map(trainingPlanMapper::mapToSummaryDTO);
     }
+
 
     public Page<TrainingPlanSummaryDTO> getTrainingPlansByUser(Long userId, int page, int size, String sortField, String sortDirection) {
         Sort sort = sortDirection.equalsIgnoreCase("desc") ?

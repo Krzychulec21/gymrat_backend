@@ -43,7 +43,7 @@ public class TrainingPlanMapper {
         return trainingPlan;
     }
 
-    public TrainingPlanResponseDTO mapToResponseDTO(TrainingPlan trainingPlan, int likeCount, List<CommentResponseDTO> comments) {
+    public TrainingPlanResponseDTO mapToResponseDTO(TrainingPlan trainingPlan, int likeCount, List<CommentResponseDTO> comments, String userReaction) {
         List<ExerciseInPlanResponseDTO> exercises = trainingPlan.getExercisesInPlan().stream().map(exerciseInPlan ->
                 new ExerciseInPlanResponseDTO(
                         exerciseInPlan.getExercise().getId(),
@@ -60,22 +60,20 @@ public class TrainingPlanMapper {
                 trainingPlan.getCategories(),
                 exercises,
                 comments,
-                likeCount
+                likeCount,
+                userReaction
         );
     }
 
     public TrainingPlanSummaryDTO mapToSummaryDTO(TrainingPlan trainingPlan) {
-        int likeCount = trainingPlan.getLikes().stream()
-                .mapToInt(like -> like.getIsLike() ? 1 : -1)
-                .sum();
-
         return new TrainingPlanSummaryDTO(
                 trainingPlan.getId(),
                 trainingPlan.getName(),
                 trainingPlan.getAuthor().getNickname(),
                 trainingPlan.getCategories(),
                 trainingPlan.getDifficultyLevel(),
-                likeCount
+                trainingPlan.getLikeCount()
         );
     }
+
 }

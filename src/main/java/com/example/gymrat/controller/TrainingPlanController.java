@@ -1,12 +1,17 @@
 package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.trainingPlan.*;
+import com.example.gymrat.model.CategoryName;
 import com.example.gymrat.service.TrainingPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,13 +32,18 @@ public class TrainingPlanController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getAllTrainingPlans(
+    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getAllTrainingPlansSummary(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) Set<CategoryName> categories,
+            @RequestParam(required = false) List<Integer> difficultyLevels,
+            @RequestParam(required = false) String authorNickname
     ) {
-        return ResponseEntity.ok(trainingPlanService.getAllTrainingPlans(page, size, sortField, sortDirection));
+        return ResponseEntity.ok(
+                trainingPlanService.getAllTrainingPlans(page, size, sortField, sortDirection, categories, difficultyLevels, authorNickname)
+        );
     }
 
     @GetMapping("/user/{userId}")

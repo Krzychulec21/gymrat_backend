@@ -14,5 +14,6 @@ public record TrainingPlanResponseDTO(
         Set<CategoryName> categories,
         List<ExerciseInPlanResponseDTO> exercises,
         List<CommentResponseDTO> comments,
-        Integer likeCount
+        Integer likeCount,
+        String userReaction
 ) {}

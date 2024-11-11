@@ -38,7 +38,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         addFriends();
         addExercises();
         addWorkoutSession();
-       // addTrainingPlans();
+        addTrainingPlans();
     }
 
 
@@ -695,18 +695,16 @@ public class DatabaseSeeder implements CommandLineRunner {
                 )
         );
 
-        // Additional plans can be added similarly
 
         List<CreateTrainingPlanDTO> plans = Arrays.asList(plan1, plan2, plan3, plan4, plan5);
 
-        // Simulate different users creating plans
         List<User> users = userRepository.findAll();
 
         Random random = new Random();
 
         for (CreateTrainingPlanDTO planDTO : plans) {
             User randomUser = users.get(random.nextInt(users.size()));
-            userService.setCurrentUser(randomUser); // Simulate as if the user is logged in
+            userService.setCurrentUser(user);
             trainingPlanService.saveTrainingPlan(planDTO);
         }
     }

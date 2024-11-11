@@ -12,6 +12,7 @@ public record UserResponseDTO(
 
         @Schema(description = "Last name of the user", example = "Doe")
         String lastName,
+        String nickname,
 
         @Schema(description = "Email address of the user", example = "john.doe@example.com")
         String email

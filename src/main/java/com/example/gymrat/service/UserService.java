@@ -97,6 +97,7 @@ public class UserService {
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getNickname(),
                 user.getEmail()
         );
     }

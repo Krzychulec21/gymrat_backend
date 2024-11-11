@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,6 +40,10 @@ public class TrainingPlan {
 
     @OneToMany(mappedBy = "trainingPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TrainingPlanLike> likes = new ArrayList<>();
+
+    @Formula("(SELECT COALESCE(SUM(CASE WHEN l.is_like = true THEN 1 ELSE -1 END), 0) FROM training_plan_like l WHERE l.training_plan_id = id)")
+    private Integer likeCount;
+
 
     @ElementCollection(targetClass = CategoryName.class)
     @Enumerated(EnumType.STRING)
