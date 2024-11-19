@@ -36,11 +36,12 @@ public class WorkoutService {
     private final WorkoutMapper workoutMapper;
 
 
-    public void saveWorkout(WorkoutSessionDTO workoutSessionDTO) {
+    public Long saveWorkout(WorkoutSessionDTO workoutSessionDTO) {
         WorkoutSession workoutSession = workoutMapper.mapToEntity(workoutSessionDTO);
         User user = userService.getCurrentUser();
         workoutSession.setUser(user);
         workoutSessionRepository.save(workoutSession);
+        return workoutSession.getId();
     }
 
 

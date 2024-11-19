@@ -65,14 +65,15 @@ public class TrainingPlanMapper {
         );
     }
 
-    public TrainingPlanSummaryDTO mapToSummaryDTO(TrainingPlan trainingPlan) {
+    public TrainingPlanSummaryDTO mapToSummaryDTO(TrainingPlan trainingPlan, boolean isFavorite) {
         return new TrainingPlanSummaryDTO(
                 trainingPlan.getId(),
                 trainingPlan.getName(),
                 trainingPlan.getAuthor().getNickname(),
                 trainingPlan.getCategories(),
                 trainingPlan.getDifficultyLevel(),
-                trainingPlan.getLikeCount()
+                trainingPlan.getLikeCount(),
+                isFavorite
         );
     }
 

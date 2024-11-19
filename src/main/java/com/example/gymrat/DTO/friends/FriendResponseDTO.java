@@ -8,6 +8,7 @@ public record FriendResponseDTO(
         String firstName,
         String lastName,
         String email,
-        LocalDateTime latestMessageTimestamp
+        LocalDateTime latestMessageTimestamp,
+        byte[] avatar
 ) {
 }

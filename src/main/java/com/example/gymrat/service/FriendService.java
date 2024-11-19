@@ -88,7 +88,8 @@ public class FriendService {
                     friend.getFirstName(),
                     friend.getLastName(),
                     friend.getEmail(),
-                    latestMessageTimestamp
+                    latestMessageTimestamp,
+                    friend.getPersonalInfo().getAvatar()
             );
         });
     }

@@ -20,9 +20,8 @@ public class WorkoutController {
     private final WorkoutService workoutService;
 
     @PostMapping("")
-    public ResponseEntity<Void> saveWorkoutSession(@RequestBody WorkoutSessionDTO workoutSessionDTO) {
-        workoutService.saveWorkout(workoutSessionDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> saveWorkoutSession(@RequestBody WorkoutSessionDTO workoutSessionDTO) {
+        return ResponseEntity.ok(workoutService.saveWorkout(workoutSessionDTO));
     }
 
     @GetMapping("/count")

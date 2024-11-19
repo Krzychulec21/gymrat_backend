@@ -39,23 +39,25 @@ public class TrainingPlanController {
             @RequestParam(defaultValue = "asc") String sortDirection,
             @RequestParam(required = false) Set<CategoryName> categories,
             @RequestParam(required = false) List<Integer> difficultyLevels,
-            @RequestParam(required = false) String authorNickname
+            @RequestParam(required = false) String authorNickname,
+            @RequestParam(required = false) Boolean onlyFavorites
     ) {
         return ResponseEntity.ok(
-                trainingPlanService.getAllTrainingPlans(page, size, sortField, sortDirection, categories, difficultyLevels, authorNickname)
+                trainingPlanService.getAllTrainingPlans(page, size, sortField, sortDirection, categories, difficultyLevels, authorNickname, onlyFavorites)
         );
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getTrainingPlansByUser(
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
-    ) {
-        return ResponseEntity.ok(trainingPlanService.getTrainingPlansByUser(userId, page, size, sortField, sortDirection));
-    }
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getTrainingPlansByUser(
+//            @PathVariable Long userId,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "name") String sortField,
+//            @RequestParam(defaultValue = "asc") String sortDirection
+//    ) {
+//        return ResponseEntity.ok(trainingPlanService.getTrainingPlansByUser(userId, page, size, sortField, sortDirection));
+//    }
+    //TODO:check if it is necessary
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateTrainingPlan(@PathVariable Long id, @Valid @RequestBody UpdateTrainingPlanDTO dto) {
@@ -66,6 +68,12 @@ public class TrainingPlanController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTrainingPlan(@PathVariable Long id) {
         trainingPlanService.deleteTrainingPlan(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/favorite")
+    public ResponseEntity<Void> toggleFavoriteTrainingPlan(@PathVariable Long id) {
+        trainingPlanService.toggleFavorite(id);
         return ResponseEntity.ok().build();
     }
 }

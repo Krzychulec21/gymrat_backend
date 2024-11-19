@@ -30,4 +30,7 @@ public class WorkoutSession {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToOne(mappedBy = "workoutSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Post post;
 }

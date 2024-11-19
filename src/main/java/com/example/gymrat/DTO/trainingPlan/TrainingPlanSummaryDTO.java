@@ -11,6 +11,7 @@ public record TrainingPlanSummaryDTO(
         String authorNickname,
         Set<CategoryName> categories,
         Integer difficultyLevel,
-        Integer likeCount
+        Integer likeCount,
+        boolean isFavorite
 ) {
 }

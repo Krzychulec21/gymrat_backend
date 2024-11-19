@@ -5,6 +5,7 @@ import com.example.gymrat.exception.ResourceNotFoundException;
 import com.example.gymrat.mapper.TrainingPlanMapper;
 import com.example.gymrat.model.*;
 import com.example.gymrat.repository.ExerciseRepository;
+import com.example.gymrat.repository.FavoriteTrainingPlanRepository;
 import com.example.gymrat.repository.TrainingPlanLikeRepository;
 import com.example.gymrat.repository.TrainingPlanRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class TrainingPlanService {
     private final CommentService commentService;
     private final LikeService likeService;
     private final TrainingPlanLikeRepository trainingPlanLikeRepository;
+    private final FavoriteTrainingPlanRepository favoriteTrainingPlanRepository;
 
     public void saveTrainingPlan(CreateTrainingPlanDTO dto) {
         User currentUser = userService.getCurrentUser();
@@ -87,7 +90,8 @@ public class TrainingPlanService {
             String sortDirection,
             Set<CategoryName> categories,
             List<Integer> difficultyLevels,
-            String authorNickname) {
+            String authorNickname,
+            Boolean onlyFavorite) {
 
         Specification<TrainingPlan> specification = (root, query, criteriaBuilder) -> {
             assert query != null;
@@ -116,6 +120,17 @@ public class TrainingPlanService {
             });
         }
 
+        User user = userService.getCurrentUser();
+        if (Boolean.TRUE.equals(onlyFavorite)) {
+            List<Long> favoriteTrainingPlanIds = favoriteTrainingPlanRepository.findByUserId(user.getId())
+                    .stream()
+                    .map(favorite -> favorite.getTrainingPlan().getId())
+                    .toList();
+            specification = specification.and(((root, query, criteriaBuilder) -> {
+                return root.get("id").in(favoriteTrainingPlanIds);
+            }));
+        }
+
         Sort sort = switch (sortField) {
             case "likeCount" -> Sort.by(Sort.Direction.fromString(sortDirection), "likeCount");
             case "difficultyLevel" -> Sort.by(Sort.Direction.fromString(sortDirection), "difficultyLevel");
@@ -126,20 +141,30 @@ public class TrainingPlanService {
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<TrainingPlan> trainingPlans = trainingPlanRepository.findAll(specification, pageable);
 
-        return trainingPlans.map(trainingPlanMapper::mapToSummaryDTO);
+        User currentUser = userService.getCurrentUser();
+        List<FavoriteTrainingPlan> favoriteTrainingPlans = favoriteTrainingPlanRepository.findByUserId(currentUser.getId());
+        Set<Long> favoritePlanIds = favoriteTrainingPlans.stream()
+                .map(favoriteTrainingPlan -> favoriteTrainingPlan.getTrainingPlan().getId())
+                .collect(Collectors.toSet());
+
+        return trainingPlans.map(trainingPlan -> {
+            boolean isFavorite = favoritePlanIds.contains(trainingPlan.getId());
+            return trainingPlanMapper.mapToSummaryDTO(trainingPlan, isFavorite);
+        });
     }
 
 
-    public Page<TrainingPlanSummaryDTO> getTrainingPlansByUser(Long userId, int page, int size, String sortField, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortField).descending() : Sort.by(sortField).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        Page<TrainingPlan> trainingPlansPage = trainingPlanRepository.findByAuthorId(userId, pageable);
-
-        return trainingPlansPage.map(trainingPlanMapper::mapToSummaryDTO);
-    }
+//    public Page<TrainingPlanSummaryDTO> getTrainingPlansByUser(Long userId, int page, int size, String sortField, String sortDirection) {
+//        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
+//                Sort.by(sortField).descending() : Sort.by(sortField).ascending();
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//
+//        Page<TrainingPlan> trainingPlansPage = trainingPlanRepository.findByAuthorId(userId, pageable);
+//
+//        return trainingPlansPage.map(trainingPlanMapper::mapToSummaryDTO);
+//    }
+    //TODO: check if is it necessary
 
     public void updateTrainingPlan(Long planId, UpdateTrainingPlanDTO dto) {
         User currentUser = userService.getCurrentUser();
@@ -202,5 +227,24 @@ public class TrainingPlanService {
         }
 
         trainingPlanRepository.delete(trainingPlan);
+    }
+
+    public void toggleFavorite(Long trainingPlanId) {
+        User user = userService.getCurrentUser();
+
+        Optional<FavoriteTrainingPlan> favorite = favoriteTrainingPlanRepository.findByUserIdAndTrainingPlanId(user.getId(), trainingPlanId);
+
+        if (favorite.isPresent()) {
+            favoriteTrainingPlanRepository.delete(favorite.get());
+        }
+        else {
+            TrainingPlan trainingPlan = trainingPlanRepository.findById(trainingPlanId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
+
+            FavoriteTrainingPlan newFavorite = new FavoriteTrainingPlan();
+            newFavorite.setUser(user);
+            newFavorite.setTrainingPlan(trainingPlan);
+            favoriteTrainingPlanRepository.save(newFavorite);
+        }
     }
 }
