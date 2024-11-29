@@ -5,14 +5,17 @@ import com.example.gymrat.DTO.auth.RegisterRequest;
 import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.auth.AuthenticationResponse;
 import com.example.gymrat.config.JwtService;
+import com.example.gymrat.exception.auth.EmailNotVerifiedException;
 import com.example.gymrat.exception.auth.InvalidCredentialsException;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
 import com.example.gymrat.exception.user.UserNotFoundException;
 import com.example.gymrat.mapper.UserMapper;
 import com.example.gymrat.model.PersonalInfo;
 import com.example.gymrat.model.User;
+import com.example.gymrat.model.VerificationToken;
 import com.example.gymrat.repository.PersonalInfoRepository;
 import com.example.gymrat.repository.UserRepository;
+import com.example.gymrat.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +24,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +36,18 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PersonalInfoRepository personalInfoRepository;
-
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailService emailService;
 
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new UserAlreadyExistsException("User with email " + request.email() + " already exists");
+            throw new UserAlreadyExistsException("Email is taken", "EMAIL_TAKEN");
         }
         if (userRepository.findByNickname(request.nickname()).isPresent()) {
-            throw new UserAlreadyExistsException("User with nickname " + request.nickname() + " already exists");
+            throw new UserAlreadyExistsException("Nickname is taken", "NICKNAME_TAKEN");
         }
+
 
         User user = UserMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
@@ -51,6 +58,10 @@ public class UserService {
         personalInfo.setDateOfBirth(request.birthday());
         personalInfoRepository.save(personalInfo);
 
+        String token = generateVerificationToken(user);
+
+        String verificationUrl = "http://localhost:8080/api/v1/auth/verify-email?token=" + token;
+        emailService.send(user.getEmail(), "Verify your email", "Click the link to verify your email: " + verificationUrl);
 
 
         String jwtToken = jwtService.generateToken(user);
@@ -72,12 +83,17 @@ public class UserService {
         }
 
         User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new UserNotFoundException("User not found"));
-        String jwtToken = jwtService.generateToken(user);
 
-        return  AuthenticationResponse.builder()
+        if (!user.isEmailVerified()) {
+            throw new EmailNotVerifiedException("Email not verified");
+        }
+
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -106,7 +122,7 @@ public class UserService {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return userRepository.findByEmail(userEmail)
-                .orElseThrow(() ->  new UserNotFoundException("User not found with email: " + userEmail));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + userEmail));
     }
 
     public void setCurrentUser(User user) {
@@ -115,7 +131,15 @@ public class UserService {
         );
     }
 
-
+    private String generateVerificationToken(User user) {
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(token);
+        verificationToken.setUser(user);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusHours(24));
+        verificationTokenRepository.save(verificationToken);
+        return token;
+    }
 
 
 }
