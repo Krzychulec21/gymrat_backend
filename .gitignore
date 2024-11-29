@@ -36,4 +36,5 @@ build/
 *.env
 
 
-/uploads/
+/src/main/resources/static/images/uploads/
+uploads
