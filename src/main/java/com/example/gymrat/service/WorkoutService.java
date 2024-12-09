@@ -6,10 +6,7 @@ import com.example.gymrat.DTO.workout.WorkoutSessionResponseDTO;
 import com.example.gymrat.exception.ResourceNotFoundException;
 import com.example.gymrat.mapper.WorkoutMapper;
 import com.example.gymrat.model.*;
-import com.example.gymrat.repository.ExerciseRepository;
-import com.example.gymrat.repository.ExerciseSessionRepository;
-import com.example.gymrat.repository.ExerciseSetRepository;
-import com.example.gymrat.repository.WorkoutSessionRepository;
+import com.example.gymrat.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +33,7 @@ public class WorkoutService {
     private final ExerciseSessionRepository exerciseSessionRepository;
     private final UserService userService;
     private final WorkoutMapper workoutMapper;
+    private final PostRepository postRepository;
 
 
     public Long saveWorkout(WorkoutSessionDTO workoutSessionDTO) {
@@ -68,7 +68,7 @@ public class WorkoutService {
         User user = userService.getCurrentUser();
 
         List<Object[]> results = workoutSessionRepository.findTopCategoriesByUserIdWithSetCount(user.getId());
-        results = results.stream().limit(3).toList();
+        results = results.stream().toList();
 
         int totalSets = results.stream()
                 .mapToInt(result -> ((Number) result[1]).intValue())
@@ -82,14 +82,6 @@ public class WorkoutService {
 
 
             categories.add(new CategoryPercentage(category, percentage));
-        }
-
-
-        int totalOtherSets = workoutSessionRepository.countAllSetsForUser(user.getId()) - totalSets;
-
-        if (totalOtherSets > 0) {
-            double otherPercentage = Math.round((double) totalOtherSets / (totalOtherSets + totalSets) * 100);
-            categories.add(new CategoryPercentage("INNE", otherPercentage));
         }
 
         return categories;
@@ -161,4 +153,60 @@ public class WorkoutService {
 
         workoutSessionRepository.delete(existingWorkoutSession);
     }
+
+    public WorkoutSessionResponseDTO getWorkoutById(Long id) {
+        Post post = postRepository.findByWorkoutSessionId(id).orElse(null);
+        if (post == null) {
+            throw new AccessDeniedException("You do not have permission to this resource");
+        }
+        WorkoutSession workoutSession = workoutSessionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Workout session with given ID does not exist"));
+
+        return workoutMapper.mapToResponseDTO(workoutSession);
+    }
+
+    public List<CategoryCount> getTrainedCategoriesCount() {
+        User user = userService.getCurrentUser();
+        List<Object[]> results = workoutSessionRepository.findTrainedCategoriesCount(user.getId());
+
+        return results.stream()
+                .map(result -> new CategoryCount(((CategoryName) result[0]).name(), ((Number) result[1]).intValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<ExerciseCount> getTrainedExercisesCount() {
+        User user = userService.getCurrentUser();
+        List<Object[]> results = workoutSessionRepository.findTrainedExercisesCount(user.getId());
+
+        return results.stream()
+                .map(result -> new ExerciseCount((String) result[0], ((Number) result[1]).intValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<OneRepMaxDataPoint> getExerciseOneRepMaxProgress(Long exerciseId) {
+        User user = userService.getCurrentUser();
+        List<ExerciseSession> sessions = exerciseSessionRepository.findByExerciseIdAndUserId(exerciseId, user.getId());
+
+        Map<LocalDate, Double> dateToMaxOneRepMax = new TreeMap<>();
+
+        for (ExerciseSession session : sessions) {
+            LocalDate date = session.getWorkoutSession().getDate();
+            double maxOneRepMax = session.getSets().stream()
+                    .mapToDouble(set -> calculateOneRepMax(set.getWeight(), set.getReps()))
+                    .max()
+                    .orElse(0);
+
+            dateToMaxOneRepMax.merge(date, maxOneRepMax, Math::max);
+        }
+
+        return dateToMaxOneRepMax.entrySet().stream()
+                .map(entry -> new OneRepMaxDataPoint(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    private double calculateOneRepMax(double weight, int reps) {
+        return weight * (1 + reps / 30.0);
+    }
+
+
 }

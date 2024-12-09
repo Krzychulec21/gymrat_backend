@@ -2,17 +2,13 @@ package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.personalInfo.PersonalInfoRequestDTO;
 import com.example.gymrat.DTO.personalInfo.PersonalInfoResponseDTO;
-import com.example.gymrat.exception.InvalidFileFormatException;
 import com.example.gymrat.service.PersonalInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +39,22 @@ public class PersonalInfoController {
                 .body(avatar);
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<PersonalInfoResponseDTO> getPersonalInfo(@PathVariable Long userId) {
+        return ResponseEntity.ok(personalInfoService.getPersonalInfo(userId));
+    }
+
+    @GetMapping("/{userId}/avatar")
+    public ResponseEntity<byte[]> getAvatar(@PathVariable Long userId) {
+        byte[] avatar = personalInfoService.getAvatar(userId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(avatar);
+    }
 
     @PatchMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateAvatar(@RequestParam("file") MultipartFile file) {

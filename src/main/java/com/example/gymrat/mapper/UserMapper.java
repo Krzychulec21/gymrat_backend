@@ -15,7 +15,7 @@ public class UserMapper {
         user.setEmail(userCreateDTO.email());
         user.setPassword(userCreateDTO.password());
         user.setAuthProvider(AuthProvider.LOCAL);
-        user.setRole(Role.USER);
+        user.setRole(Role.ROLE_USER);
         return user;
     }
 

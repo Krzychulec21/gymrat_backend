@@ -17,7 +17,9 @@ import java.util.Optional;
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
     List<PendingFriendRequestDTO> findByReceiver_EmailAndStatus(String receiverEmail, RequestStatus status);
+
     List<FriendRequest> findBySender_EmailAndStatus(String senderEmail, RequestStatus status);
+
     Optional<FriendRequest> findBySender_EmailAndReceiver_Email(String senderEmail, String receiverEmail);
 
     @Modifying
@@ -27,4 +29,6 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
 
 
     List<FriendRequest> findBySender(User currentUser);
+
+    Optional<FriendRequest> findBySenderAndReceiver(User currentUser, User otherUser);
 }

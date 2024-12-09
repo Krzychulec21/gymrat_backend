@@ -56,6 +56,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
+    private boolean isEmailVerified = false;
+
+    private boolean isBlocked = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -40,5 +40,25 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
             "ORDER BY totalSets DESC")
     List<Object[]> findTopCategoriesByUserIdWithSetCount(@Param("userId") Long userId);
 
+    @Query("SELECT e.category, COUNT(DISTINCT ws.date) " +
+            "FROM WorkoutSession ws " +
+            "JOIN ws.exerciseSessions es " +
+            "JOIN es.exercise e " +
+            "WHERE ws.user.id = :userId " +
+            "GROUP BY e.category " +
+            "ORDER BY COUNT(DISTINCT ws.date) DESC")
+    List<Object[]> findTrainedCategoriesCount(@Param("userId") Long userId);
+
+    @Query("SELECT e.name, COUNT(DISTINCT ws.date) " +
+            "FROM WorkoutSession ws " +
+            "JOIN ws.exerciseSessions es " +
+            "JOIN es.exercise e " +
+            "WHERE ws.user.id = :userId " +
+            "GROUP BY e.name " +
+            "ORDER BY COUNT(DISTINCT ws.date) DESC")
+    List<Object[]> findTrainedExercisesCount(@Param("userId") Long userId);
+
+
+
 
 }

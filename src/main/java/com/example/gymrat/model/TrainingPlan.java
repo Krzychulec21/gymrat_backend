@@ -51,4 +51,8 @@ public class TrainingPlan {
     @Column(name = "category")
     private Set<CategoryName> categories = new HashSet<>();
 
+    @OneToMany(mappedBy = "trainingPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteTrainingPlan> favoriteTrainingPlans = new ArrayList<>();
+
+
 }

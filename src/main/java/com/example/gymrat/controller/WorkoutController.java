@@ -2,7 +2,10 @@ package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.workout.WorkoutSessionDTO;
 import com.example.gymrat.DTO.workout.WorkoutSessionResponseDTO;
+import com.example.gymrat.model.CategoryCount;
 import com.example.gymrat.model.CategoryPercentage;
+import com.example.gymrat.model.ExerciseCount;
+import com.example.gymrat.model.OneRepMaxDataPoint;
 import com.example.gymrat.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +38,7 @@ public class WorkoutController {
     }
 
     @GetMapping("/last-workout")
-    public ResponseEntity <LocalDate> getDateOfTheLastWorkout() {
+    public ResponseEntity<LocalDate> getDateOfTheLastWorkout() {
         return ResponseEntity.ok(workoutService.getDateOfTheLastWorkout());
     }
 
@@ -52,6 +55,12 @@ public class WorkoutController {
             @RequestParam(defaultValue = "desc") String sortDir) {
         return ResponseEntity.ok(workoutService.getUserWorkouts(page, size, sortBy, sortDir));
     }
+
+    @GetMapping("/{workoutId}")
+    public ResponseEntity<WorkoutSessionResponseDTO> getWorkoutById(@PathVariable Long workoutId) {
+        return ResponseEntity.ok(workoutService.getWorkoutById(workoutId));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateWorkoutSession(@PathVariable Long id, @RequestBody WorkoutSessionDTO workoutSessionDTO) {
         workoutService.updateWorkout(id, workoutSessionDTO);
@@ -63,5 +72,22 @@ public class WorkoutController {
         workoutService.deleteWorkout(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/trained-categories-count")
+    public ResponseEntity<List<CategoryCount>> getTrainedCategoriesCount() {
+        return ResponseEntity.ok(workoutService.getTrainedCategoriesCount());
+    }
+
+    @GetMapping("/trained-exercises-count")
+    public ResponseEntity<List<ExerciseCount>> getTrainedExercisesCount() {
+        return ResponseEntity.ok(workoutService.getTrainedExercisesCount());
+    }
+
+    @GetMapping("/exercise/{exerciseId}/one-rep-max")
+    public ResponseEntity<List<OneRepMaxDataPoint>> getExerciseOneRepMaxProgress(@PathVariable Long exerciseId) {
+        return ResponseEntity.ok(workoutService.getExerciseOneRepMaxProgress(exerciseId));
+    }
+
 
 }

@@ -2,7 +2,11 @@ package com.example.gymrat.DTO.exercise;
 
 import com.example.gymrat.model.CategoryName;
 
-public record CreateExerciseDTO (
+public record CreateExerciseDTO(
         String name,
-        CategoryName categoryName
-){}
+        CategoryName categoryName,
+        String description,
+        String videoId,
+        int difficultyLevel
+) {
+}

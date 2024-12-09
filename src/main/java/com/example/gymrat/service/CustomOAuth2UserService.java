@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setFirstName(firstName);
             newUser.setLastName(lastName);
             newUser.setAuthProvider(AuthProvider.GOOGLE);
-            newUser.setRole(Role.USER);
+            newUser.setRole(Role.ROLE_USER);
             userRepository.save(newUser);
             return newUser;
         });

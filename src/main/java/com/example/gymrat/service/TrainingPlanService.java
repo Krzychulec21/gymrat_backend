@@ -236,8 +236,7 @@ public class TrainingPlanService {
 
         if (favorite.isPresent()) {
             favoriteTrainingPlanRepository.delete(favorite.get());
-        }
-        else {
+        } else {
             TrainingPlan trainingPlan = trainingPlanRepository.findById(trainingPlanId)
                     .orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
 

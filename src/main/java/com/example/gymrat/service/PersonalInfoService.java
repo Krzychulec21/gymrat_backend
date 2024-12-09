@@ -50,6 +50,20 @@ public class PersonalInfoService {
         return user.getPersonalInfo().getAvatar();
     }
 
+    public PersonalInfoResponseDTO getPersonalInfo(Long userId) {
+        User user = userService.getUserById(userId);
+
+        PersonalInfo personalInfo = user.getPersonalInfo();
+
+        return personalInfoMapper.toDTO(personalInfo);
+    }
+
+    public byte[] getAvatar(Long userId) {
+        User user = userService.getUserById(userId);
+
+        return user.getPersonalInfo().getAvatar();
+    }
+
     public ResponseEntity<String> updateAvatar(MultipartFile file) {
 
         if (file.isEmpty()) {

@@ -5,12 +5,16 @@ import com.example.gymrat.DTO.trainingPlan.CommentResponseDTO;
 import com.example.gymrat.exception.ResourceNotFoundException;
 import com.example.gymrat.mapper.CommentMapper;
 import com.example.gymrat.model.Comment;
+import com.example.gymrat.model.NotificationType;
 import com.example.gymrat.model.TrainingPlan;
 import com.example.gymrat.model.User;
 import com.example.gymrat.repository.CommentRepository;
 import com.example.gymrat.repository.TrainingPlanRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -22,25 +26,28 @@ public class CommentService {
     private final TrainingPlanRepository trainingPlanRepository;
     private final UserService userService;
     private final CommentMapper commentMapper;
+    private final NotificationService notificationService;
 
     public void addComment(Long trainingPlanId, CommentDTO dto) {
         User user = userService.getCurrentUser();
 
-        TrainingPlan trainingPlan = trainingPlanRepository.findById(trainingPlanId)
-                .orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
+        TrainingPlan trainingPlan = trainingPlanRepository.findById(trainingPlanId).orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
 
         Comment comment = new Comment();
         comment.setAuthor(user);
         comment.setTrainingPlan(trainingPlan);
         comment.setContent(dto.content());
 
+        //notification send to the author
+        if (!user.equals(trainingPlan.getAuthor())) {
+            notificationService.sendNotification(trainingPlan.getAuthor(), user, String.format("Użytkownik %s %s dodał komentarz pod Twoim planem treningowym", user.getFirstName(), user.getLastName()), NotificationType.COMMENT, trainingPlan.getId());
+        }
         commentRepository.save(comment);
     }
 
     public void updateComment(Long planId, Long commentId, CommentDTO dto) {
         User user = userService.getCurrentUser();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment with given ID does not exist"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment with given ID does not exist"));
 
         if (!comment.getTrainingPlan().getId().equals(planId)) {
             throw new ResourceNotFoundException("Comment does not belong to the specified training plan");
@@ -56,8 +63,7 @@ public class CommentService {
 
     public void deleteComment(Long planId, Long commentId) {
         User user = userService.getCurrentUser();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment with given ID does not exist"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment with given ID does not exist"));
 
         if (!comment.getTrainingPlan().getId().equals(planId)) {
             throw new ResourceNotFoundException("Comment does not belong to the specified training plan");
@@ -71,11 +77,9 @@ public class CommentService {
     }
 
     public Page<CommentResponseDTO> getComments(Long planId, int page, int size, String sortField, String sortDirection) {
-        trainingPlanRepository.findById(planId)
-                .orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
+        trainingPlanRepository.findById(planId).orElseThrow(() -> new ResourceNotFoundException("Training plan with given ID does not exist"));
 
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortField).descending() : Sort.by(sortField).ascending();
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ? Sort.by(sortField).descending() : Sort.by(sortField).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 

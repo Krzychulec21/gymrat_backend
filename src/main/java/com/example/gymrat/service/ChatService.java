@@ -94,9 +94,10 @@ public class ChatService {
 
         return chatRoomRepository.save(newChatRoom);
     }
+
     private void sendNotification(User sender, User receiver) {
         String notificationContent = String.format("Nowa wiadomość od %s %s", sender.getFirstName(), sender.getLastName());
-        notificationService.sendNotification(receiver, sender, notificationContent, NotificationType.MESSAGE);
+        notificationService.sendNotification(receiver, sender, notificationContent, NotificationType.MESSAGE, null);
     }
 
     private void sendMessageToUsers(Message message, User sender, User receiver) {

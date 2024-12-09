@@ -16,4 +16,5 @@ public record TrainingPlanResponseDTO(
         List<CommentResponseDTO> comments,
         Integer likeCount,
         String userReaction
-) {}
+) {
+}

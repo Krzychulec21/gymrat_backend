@@ -2,20 +2,22 @@ package com.example.gymrat.service;
 
 import com.example.gymrat.DTO.friends.FriendResponseDTO;
 import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
-import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
-import com.example.gymrat.model.*;
+import com.example.gymrat.model.FriendRequest;
+import com.example.gymrat.model.NotificationType;
+import com.example.gymrat.model.RequestStatus;
+import com.example.gymrat.model.User;
 import com.example.gymrat.repository.FriendRequestRepository;
 import com.example.gymrat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
-import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,7 +54,7 @@ public class FriendService {
             friendRequestRepository.save(newRequest);
         }
 
-        notificationService.sendNotification(receiver,sender, "Nowe zaproszenie od "+ sender.getFirstName() +" " + sender.getLastName(), NotificationType.FRIEND_REQUEST);
+        notificationService.sendNotification(receiver, sender, "Nowe zaproszenie od " + sender.getFirstName() + " " + sender.getLastName(), NotificationType.FRIEND_REQUEST, null);
     }
 
     public void respondToFriendRequest(Long requestId, boolean accepted) {
@@ -78,7 +80,7 @@ public class FriendService {
         Sort sort = Sort.by(direction, sortBy.equals("latestMessage") ? "latestMessageTimestamp" : sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Object[]> friendsPage = userRepository.findFriendsWithLatestMessageTimestampAndAgeRange(user.getId(),minAge, maxAge, pageable);
+        Page<Object[]> friendsPage = userRepository.findFriendsWithLatestMessageTimestampAndAgeRange(user.getId(), minAge, maxAge, pageable);
 
         return friendsPage.map(obj -> {
             User friend = (User) obj[0];
@@ -174,5 +176,19 @@ public class FriendService {
                     isFriendRequestSent
             );
         });
+    }
+
+    public String getFriendStatus(String currentUserEmail, Long userId) {
+        User currentUser = userRepository.findByEmail(currentUserEmail).orElseThrow();
+        User otherUser = userRepository.findById(userId).orElseThrow();
+
+        if (currentUser.getFriends().contains(otherUser)) {
+            return "FRIEND";
+        }
+        Optional<FriendRequest> request = friendRequestRepository.findBySenderAndReceiver(currentUser, otherUser);
+        if (request.isPresent() && request.get().getStatus() == RequestStatus.PENDING) {
+            return "PENDING";
+        }
+        return "NOT_FRIEND";
     }
 }

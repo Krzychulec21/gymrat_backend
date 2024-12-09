@@ -2,15 +2,11 @@ package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.friends.FriendRequestActionDTO;
 import com.example.gymrat.DTO.friends.FriendResponseDTO;
+import com.example.gymrat.DTO.friends.FriendStatusDTO;
 import com.example.gymrat.DTO.friends.PendingFriendRequestDTO;
 import com.example.gymrat.DTO.user.EmailDTO;
-import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.DTO.user.UserWithRequestStatusDTO;
 import com.example.gymrat.service.FriendService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -89,5 +85,12 @@ public class FriendController {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<UserWithRequestStatusDTO> usersPage = friendService.searchUsersWithRequestStatus(userEmail, query, page, size);
         return ResponseEntity.ok(usersPage);
+    }
+
+    @GetMapping("/status/{userId}")
+    public ResponseEntity<FriendStatusDTO> getFriendStatus(@PathVariable Long userId) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String status = friendService.getFriendStatus(currentUserEmail, userId);
+        return ResponseEntity.ok(new FriendStatusDTO(status));
     }
 }

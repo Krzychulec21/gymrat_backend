@@ -1,6 +1,9 @@
 package com.example.gymrat.controller;
 
-import com.example.gymrat.DTO.trainingPlan.*;
+import com.example.gymrat.DTO.trainingPlan.CreateTrainingPlanDTO;
+import com.example.gymrat.DTO.trainingPlan.TrainingPlanResponseDTO;
+import com.example.gymrat.DTO.trainingPlan.TrainingPlanSummaryDTO;
+import com.example.gymrat.DTO.trainingPlan.UpdateTrainingPlanDTO;
 import com.example.gymrat.model.CategoryName;
 import com.example.gymrat.service.TrainingPlanService;
 import jakarta.validation.Valid;
@@ -9,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 

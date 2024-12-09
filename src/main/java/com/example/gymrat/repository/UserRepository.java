@@ -12,7 +12,12 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+
     Optional<User> findByNickname(String username);
+
+    @Query("SELECT u FROM User u WHERE u.id <> :currentUserId")
+    Page<User> findAllExceptCurrentUser(@Param("currentUserId") Long currentUserId, Pageable pageable);
+
 
     @Query("SELECT f FROM User u JOIN u.friends f WHERE u.id = :userId")
     List<User> findFriendsByUserId(@Param("userId") Long userId);

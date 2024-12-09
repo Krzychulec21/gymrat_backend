@@ -48,14 +48,13 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-      return generateToken(new HashMap<>(), userDetails);
+        return generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
-    )
-    {
+    ) {
         User user;
         if (userDetails instanceof User) {
             user = (User) userDetails;
@@ -69,8 +68,9 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .claim("id", user.getId())
+                .claim("role", user.getRole().name())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
 

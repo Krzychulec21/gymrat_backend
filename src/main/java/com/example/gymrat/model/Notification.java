@@ -1,11 +1,9 @@
 package com.example.gymrat.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.bytecode.enhance.spi.EnhancementInfo;
 
 import java.time.LocalDateTime;
 
@@ -33,4 +31,7 @@ public class Notification {
     private NotificationType notificationType;
     private LocalDateTime timestamp = LocalDateTime.now();
     private boolean isRead = false;
+
+    @Column(nullable = true) //only if we need navigate to specific resource like training plan
+    private Long relatedResourceId;
 }

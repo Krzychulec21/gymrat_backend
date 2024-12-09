@@ -2,6 +2,7 @@ package com.example.gymrat.exception;
 
 import com.example.gymrat.exception.auth.EmailNotVerifiedException;
 import com.example.gymrat.exception.auth.InvalidCredentialsException;
+import com.example.gymrat.exception.auth.UserBlockedException;
 import com.example.gymrat.exception.chat.ChatRoomNotFoundException;
 import com.example.gymrat.exception.friend.FriendRequestAlreadyExistsException;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
@@ -73,6 +74,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailNotVerifiedException.class)
     public ResponseEntity<String> handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserBlockedException.class)
+    public ResponseEntity<String> handleUserBlockedException(UserBlockedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
 

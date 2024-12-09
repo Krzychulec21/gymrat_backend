@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potwierdź swój e-mail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            color: #ffffff;
+            font-weight: bold;
+            background-color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Witaj w GymRat!</h2>
+    <p>Dziękujemy za rejestrację. Aby zweryfikować swój adres e-mail, kliknij w poniższy przycisk:</p>
+    <a th:href="${verificationUrl}" class="btn">Potwierdź e-mail</a>
+    <p>Jeśli nie rejestrowałeś się w naszej aplikacji, możesz zignorować tę wiadomość.</p>
+</div>
+</body>
+</html>

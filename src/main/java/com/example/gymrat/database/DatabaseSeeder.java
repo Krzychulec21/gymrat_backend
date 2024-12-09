@@ -6,17 +6,25 @@ import com.example.gymrat.DTO.trainingPlan.ExerciseInPlanDTO;
 import com.example.gymrat.DTO.workout.ExerciseSessionDTO;
 import com.example.gymrat.DTO.workout.ExerciseSetDTO;
 import com.example.gymrat.DTO.workout.WorkoutSessionDTO;
+import com.example.gymrat.mapper.UserMapper;
 import com.example.gymrat.mapper.WorkoutMapper;
 import com.example.gymrat.model.*;
-import com.example.gymrat.repository.ExerciseRepository;
-import com.example.gymrat.repository.UserRepository;
-import com.example.gymrat.repository.WorkoutSessionRepository;
-import com.example.gymrat.service.*;
+import com.example.gymrat.repository.*;
+import com.example.gymrat.service.FriendService;
+import com.example.gymrat.service.TrainingPlanService;
+import com.example.gymrat.service.UserService;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -30,6 +38,10 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final WorkoutSessionRepository workoutSessionRepository;
     private final WorkoutMapper workoutMapper;
     private final TrainingPlanService trainingPlanService;
+    private final PersonalInfoRepository personalInfoRepository;
+    private final PostRepository postRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     @Transactional
@@ -39,8 +51,23 @@ public class DatabaseSeeder implements CommandLineRunner {
         addExercises();
         addWorkoutSession();
         addTrainingPlans();
+        addPersonalInfo();
+        addPost();
+        addAdmin();
     }
 
+    public void addAdmin() {
+        RegisterRequest admin = new RegisterRequest("Admin", "Admin", "admin", "admin@example.com", "password", LocalDate.of(2002, 12, 12));
+        User user = UserMapper.toEntity(admin);
+        user.setPassword(passwordEncoder.encode(admin.password()));
+        user.setRole(Role.ROLE_ADMIN);
+        user.setEmailVerified(true);
+        userRepository.save(user);
+
+        PersonalInfo personalInfo = new PersonalInfo();
+        personalInfo.setUser(user);
+        personalInfoRepository.save(personalInfo);
+    }
 
     public void seedUsers() {
         RegisterRequest user1 = new RegisterRequest("Jan", "Kowalski", "kowalczyk", "kowalski@wp.pl", "password", LocalDate.of(2002, 12, 12));
@@ -79,7 +106,6 @@ public class DatabaseSeeder implements CommandLineRunner {
         RegisterRequest user34 = new RegisterRequest("Oliwia", "Zając", "oliwiaZ", "oliwia@example.com", "password", LocalDate.of(1999, 6, 24));
         RegisterRequest user35 = new RegisterRequest("Dominik", "Król", "dominikK", "dominik@example.com", "password", LocalDate.of(2000, 7, 16));
 
-
         userService.register(user1);
         userService.register(user2);
         userService.register(user3);
@@ -115,11 +141,16 @@ public class DatabaseSeeder implements CommandLineRunner {
         userService.register(user33);
         userService.register(user34);
         userService.register(user35);
+
+
     }
 
     public void addFriends() {
         User user1 = userRepository.findByEmail("kowalski@wp.pl")
                 .orElseThrow(() -> new RuntimeException("User not found: kowalski@wp.pl"));
+
+        user1.setEmailVerified(true);
+        userRepository.save(user1);
 
         String[] userEmails = {
                 "nowak@wp.pl",
@@ -162,6 +193,8 @@ public class DatabaseSeeder implements CommandLineRunner {
             String email = userEmails[i];
             User otherUser = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found: " + email));
+            otherUser.setEmailVerified(true);
+            userRepository.save(otherUser);
 
             friendService.sendFriendRequest(user1.getEmail(), otherUser.getEmail());
             friendService.respondToFriendRequest((long) (i + 1), true);
@@ -557,7 +590,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 new Exercise(null, "Podciągnięcia", CategoryName.PLECY, pullUpsInfo),
                 new Exercise(null, "Ściąganie drążka", CategoryName.PLECY, latPulldownInfo),
                 new Exercise(null, "Wiosłowanie w opadzie", CategoryName.PLECY, bentOverRowInfo),
-                new Exercise(null, "Wiosłowanie T--bar", CategoryName.PLECY, tBarRowInfo),
+                new Exercise(null, "Wiosłowanie T-bar", CategoryName.PLECY, tBarRowInfo),
 
                 // BICEPS
                 new Exercise(null, "Uginanie ramion ze sztangą", CategoryName.BICEPS, barbellCurlInfo),
@@ -592,39 +625,59 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 
     public void addWorkoutSession() {
+        User user = userRepository.findByEmail("kowalski@wp.pl")
+                .orElseThrow(() -> new RuntimeException("User not found: kowalski@wp.pl"));
 
-        User user = userRepository.findByEmail("kowalski@wp.pl").orElseThrow();
-        // Example exercises (assuming these already exist in your DB)
-        Long exercise1Id = 1L; // ID for "Squat"
-        Long exercise2Id = 2L; // ID for "Bench Press"
+        List<WorkoutSessionDTO> workoutSessions = new ArrayList<>();
+        LocalDate startDate = LocalDate.of(2024, 9, 10);
 
-        // Create sets for the first exercise session (e.g., Squat)
-        ExerciseSetDTO set1 = new ExerciseSetDTO(12, 80.0); // 12 reps, 80 kg
-        ExerciseSetDTO set2 = new ExerciseSetDTO(10, 85.0); // 10 reps, 85 kg
-        List<ExerciseSetDTO> squatSets = Arrays.asList(set1, set2);
+        String[] exercises = {
+                "Przysiad ze sztangą", "Martwy ciąg", "Podciągnięcia",
+                "Wyciskanie sztangi leżąc", "Rozpiętki",
+                "Wiosłowanie w opadzie", "Wyciskanie hantli siedząc",
+                "Prostowanie ramion na wyciągu górnym", "Pompki"
+        };
 
-        // Create the first exercise session (Squat)
-        ExerciseSessionDTO squatSession = new ExerciseSessionDTO(exercise1Id, "Squat", squatSets);
+        double baseWeight = 40.0;
+        int baseReps = 10;
+        int baseSets = 3;
 
-        // Create sets for the second exercise session (e.g., Bench Press)
-        ExerciseSetDTO set3 = new ExerciseSetDTO(10, 60.0); // 10 reps, 60 kg
-        ExerciseSetDTO set4 = new ExerciseSetDTO(8, 65.0);  // 8 reps, 65 kg
-        List<ExerciseSetDTO> benchPressSets = Arrays.asList(set3, set4);
 
-        // Create the second exercise session (Bench Press)
-        ExerciseSessionDTO benchPressSession = new ExerciseSessionDTO(exercise2Id, "Bench press", benchPressSets);
+        for (int i = 0; i < 30; i++) {
+            LocalDate sessionDate = startDate.plusDays(i * 2);
+            List<ExerciseSessionDTO> exerciseSessions = new ArrayList<>();
 
-        // Create a workout session with both exercise sessions
-        WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO(
-                LocalDate.now(),            // Current date
-                "Morning workout",          // Note
-                Arrays.asList(squatSession, benchPressSession) // List of exercise sessions
-        );
+            for (int j = 0; j < 6; j++) {
+                String exerciseName = exercises[(i + j) % exercises.length];
+                double weight = baseWeight + ((double) i / 2);
+                int reps = baseReps + (i / 5);
 
-        WorkoutSession workoutSession = workoutMapper.mapToEntity(workoutSessionDTO);
-        workoutSession.setUser(user);
+                List<ExerciseSetDTO> sets = new ArrayList<>();
+                for (int k = 0; k < baseSets; k++) {
+                    sets.add(new ExerciseSetDTO(reps - k, weight - (k * 2.5)));
+                }
 
-        workoutSessionRepository.save(workoutSession);
+                exerciseSessions.add(createExerciseSession(exerciseName, sets));
+            }
+
+            workoutSessions.add(new WorkoutSessionDTO(
+                    sessionDate,
+                    "Trening " + (i + 1),
+                    exerciseSessions
+            ));
+        }
+
+        for (WorkoutSessionDTO workoutSessionDTO : workoutSessions) {
+            WorkoutSession workoutSession = workoutMapper.mapToEntity(workoutSessionDTO);
+            workoutSession.setUser(user);
+            workoutSessionRepository.save(workoutSession);
+        }
+    }
+
+    private ExerciseSessionDTO createExerciseSession(String exerciseName, List<ExerciseSetDTO> sets) {
+        Exercise exercise = exerciseRepository.findByName(exerciseName)
+                .orElseThrow(() -> new RuntimeException("Exercise not found: " + exerciseName));
+        return new ExerciseSessionDTO(exercise.getId(), exercise.getName(), sets);
     }
 
 
@@ -678,7 +731,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         new ExerciseInPlanDTO(exerciseMap.get("Martwy ciąg"), "5 serii x 5 powtórzeń"),
                         new ExerciseInPlanDTO(exerciseMap.get("Wyciskanie sztangi leżąc"), "5 serii x 5 powtórzeń"),
                         new ExerciseInPlanDTO(exerciseMap.get("Przysiad ze sztangą"), "5 serii x 5 powtórzeń"),
-                        new ExerciseInPlanDTO(exerciseMap.get("Wiosłowanie T--bar"), "5 serii x 5 powtórzeń")
+                        new ExerciseInPlanDTO(exerciseMap.get("Wiosłowanie T-bar"), "5 serii x 5 powtórzeń")
                 )
         );
 
@@ -708,6 +761,57 @@ public class DatabaseSeeder implements CommandLineRunner {
             trainingPlanService.saveTrainingPlan(planDTO);
         }
     }
+
+    public void addPersonalInfo() throws IOException {
+        PersonalInfo personalInfo = personalInfoRepository.findById(1L).orElseThrow();
+        personalInfo.setBio("Cześć wszystkim! Sportem zajmuję się od 10 lat. Na początku skupiony byłem na bieganiu. Od 4 lat ćwiczę na siłowni, średnio 4/5 razy w tygodniu. Mój obecny cel to 150kg na klatę :)");
+        personalInfo.setWeight(85.0);
+        personalInfo.setGender(Gender.MALE);
+        personalInfo.setHeight(188.0);
+
+        Path imagePath = Path.of("src/main/resources/static/images/man_avatar.jpg");
+        byte[] avatarBytes = Files.readAllBytes(imagePath);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(avatarBytes);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        Thumbnails.of(inputStream)
+                .size(360, 360)
+                .outputFormat("jpeg")
+                .toOutputStream(outputStream);
+
+
+        personalInfo.setAvatar(outputStream.toByteArray());
+
+        personalInfoRepository.save(personalInfo);
+    }
+
+    public void addPost() {
+        User user = userRepository.findByEmail("kowalski@wp.pl")
+                .orElseThrow(() -> new RuntimeException("User not found: kowalski@wp.pl"));
+
+
+        String[] paths = {
+                "http://localhost:8080/api/v1/posts/images/1732189061756_biceps.jpg",
+                "http://localhost:8080/api/v1/posts/images/1732189061854_plecy.jpg",
+                "http://localhost:8080/api/v1/posts/images/1732189061891_klata.jpg"
+        };
+
+        for (int i = 0; i < 3; i++) {
+            Post post = new Post();
+            post.setUser(user);
+            post.setImagePath(paths[i]);
+
+            WorkoutSession workoutSession = workoutSessionRepository.findById((long) (i + 1)).orElseThrow();
+            post.setWorkoutSession(workoutSession);
+            post.setTimestamp(LocalDate.of(2024, 9, 10 + (2 * i)));
+            post.setDescription("Pozdro z treningu. Progress mały, ale zawsze do przodu :D");
+
+            postRepository.save(post);
+        }
+
+
+    }
+
 
 }
 
