@@ -41,6 +41,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final PersonalInfoRepository personalInfoRepository;
     private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ChallengeTypeRepository challengeTypeRepository;
+    private final ChallengeRepository challengeRepository;
 
 
     @Override
@@ -54,6 +56,26 @@ public class DatabaseSeeder implements CommandLineRunner {
         addPersonalInfo();
         addPost();
         addAdmin();
+        addChallengeTypes();
+    }
+
+
+    private void addChallengeTypes() {
+        ChallengeType challengeType = new ChallengeType();
+        challengeType.setName("Najdluzsza passa treningu");
+        challengeType.setDescription("Wyzwanie polegajace na osiagnieciu najdluzszej ilosci przetrenowanych dni bez przerwy");
+        challengeTypeRepository.save(challengeType);
+
+        ChallengeType challengeType2 = new ChallengeType();
+        challengeType2.setName("Najwięcej przerzuconych kilogramów");
+        challengeType2.setDescription("Wyzwanie polegajace na osiagnieciu najwiekszej sumy podniesionych kilogramow z danego cwiczenia");
+        challengeTypeRepository.save(challengeType2);
+
+        ChallengeType challengeType3 = new ChallengeType();
+        challengeType3.setName("Najsilniejszy na raz");
+        challengeType3.setDescription("Wyzwanie polegajace na osiagnieciu najlepszego powtorzenia z danego cwiczenia");
+        challengeTypeRepository.save(challengeType3);
+
     }
 
     public void addAdmin() {
