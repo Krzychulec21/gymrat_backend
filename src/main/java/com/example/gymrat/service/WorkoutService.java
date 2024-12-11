@@ -6,7 +6,10 @@ import com.example.gymrat.DTO.workout.WorkoutSessionResponseDTO;
 import com.example.gymrat.exception.ResourceNotFoundException;
 import com.example.gymrat.mapper.WorkoutMapper;
 import com.example.gymrat.model.*;
-import com.example.gymrat.repository.*;
+import com.example.gymrat.repository.ExerciseRepository;
+import com.example.gymrat.repository.ExerciseSessionRepository;
+import com.example.gymrat.repository.PostRepository;
+import com.example.gymrat.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,21 +29,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkoutService {
     private final ExerciseRepository exerciseRepository;
-    private final ExerciseService exerciseService;
-
     private final WorkoutSessionRepository workoutSessionRepository;
-    private final ExerciseSetRepository exerciseSetRepository;
     private final ExerciseSessionRepository exerciseSessionRepository;
     private final UserService userService;
     private final WorkoutMapper workoutMapper;
     private final PostRepository postRepository;
+    private final ChallengeScoreUpdateService challengeScoreUpdateService;
 
 
     public Long saveWorkout(WorkoutSessionDTO workoutSessionDTO) {
         WorkoutSession workoutSession = workoutMapper.mapToEntity(workoutSessionDTO);
         User user = userService.getCurrentUser();
         workoutSession.setUser(user);
+
+        challengeScoreUpdateService.updateUserChallengesScore(workoutSession, null);
+
         workoutSessionRepository.save(workoutSession);
+
         return workoutSession.getId();
     }
 
@@ -100,6 +105,8 @@ public class WorkoutService {
         WorkoutSession existingWorkoutSession = workoutSessionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Workout session not found"));
 
+        WorkoutSession oldWorkout = deepCopyWorkoutSession(existingWorkoutSession);
+
         if (!existingWorkoutSession.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("You do not have permission to modify this workout session");
         }
@@ -133,11 +140,39 @@ public class WorkoutService {
             }).collect(Collectors.toList());
 
             exerciseSession.setSets(sets);
-
             existingExerciseSessions.add(exerciseSession);
         }
 
+        challengeScoreUpdateService.updateUserChallengesScore(existingWorkoutSession, oldWorkout);
+
         workoutSessionRepository.save(existingWorkoutSession);
+    }
+
+    private WorkoutSession deepCopyWorkoutSession(WorkoutSession original) {
+        WorkoutSession copy = new WorkoutSession();
+        copy.setDate(original.getDate());
+        copy.setNote(original.getNote());
+
+        List<ExerciseSession> copiedSessions = original.getExerciseSessions().stream()
+                .map(es -> {
+                    ExerciseSession copiedSession = new ExerciseSession();
+                    copiedSession.setExercise(es.getExercise());
+                    copiedSession.setWorkoutSession(copy);
+
+                    List<ExerciseSet> copiedSets = es.getSets().stream().map(set -> {
+                        ExerciseSet copiedSet = new ExerciseSet();
+                        copiedSet.setReps(set.getReps());
+                        copiedSet.setWeight(set.getWeight());
+                        copiedSet.setExerciseSession(copiedSession);
+                        return copiedSet;
+                    }).collect(Collectors.toList());
+
+                    copiedSession.setSets(copiedSets);
+                    return copiedSession;
+                }).collect(Collectors.toList());
+
+        copy.setExerciseSessions(copiedSessions);
+        return copy;
     }
 
 

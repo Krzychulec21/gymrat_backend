@@ -6,6 +6,7 @@ public record ChallengeRequestDTO(
         String name,
         Long typeId,
         LocalDate endDate,
-        boolean isPublic
+        boolean isPublic,
+        Long exerciseId
 ) {
 }

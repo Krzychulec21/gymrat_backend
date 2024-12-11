@@ -2,7 +2,7 @@ package com.example.gymrat.DTO.challenge;
 
 import java.time.LocalDate;
 
-public record ChallengeResponseDTO(
+public record ChallengeHistoryDTO(
         Long id,
         String name,
         String typeName,
@@ -11,6 +11,7 @@ public record ChallengeResponseDTO(
         LocalDate endDate,
         boolean isPublic,
         int numberOfParticipants,
-        String exerciseName
+        String exerciseName,
+        boolean userHasScore
 ) {
 }

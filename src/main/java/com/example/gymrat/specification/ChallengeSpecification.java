@@ -1,10 +1,13 @@
 package com.example.gymrat.specification;
 
 import com.example.gymrat.model.Challenge;
+import com.example.gymrat.model.ChallengeParticipant;
 import com.example.gymrat.model.ChallengeStatus;
+import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public class ChallengeSpecification {
 
@@ -38,18 +41,48 @@ public class ChallengeSpecification {
                 criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), LocalDate.now());
     }
 
+
     public static Specification<Challenge> belongsToUser(Long userId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            return cb.isMember(userId, root.join("challengeParticipants").get("user").get("id"));
+            Join<Challenge, ChallengeParticipant> participants = root.join("challengeParticipants");
+            return cb.equal(participants.get("user").get("id"), userId);
         };
     }
+
 
     public static Specification<Challenge> notBelongsToUser(Long userId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            return cb.not(cb.isMember(userId, root.join("challengeParticipants").get("user").get("id")));
+            Join<Challenge, ChallengeParticipant> participants = root.join("challengeParticipants");
+            return cb.notEqual(participants.get("user").get("id"), userId);
         };
+    }
+
+    public static Specification<Challenge> authorIn(Set<Long> userIds) {
+        return (root, query, cb) -> root.get("author").get("id").in(userIds);
+    }
+
+    public static Specification<Challenge> exerciseCategoryEquals(String categoryName) {
+        return (root, query, cb) -> {
+            if (categoryName == null || categoryName.isEmpty()) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.get("exercise").get("category").as(String.class), categoryName);
+        };
+    }
+
+    public static Specification<Challenge> typeEquals(String challengeTypeName) {
+        return (root, query, cb) -> {
+            if (challengeTypeName == null || challengeTypeName.isEmpty()) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.get("challengeType").get("name"), challengeTypeName);
+        };
+    }
+
+    public static Specification<Challenge> filterPublic(boolean isPublic) {
+        return isPublic ? isPublic() : isPrivate();
     }
 
 
