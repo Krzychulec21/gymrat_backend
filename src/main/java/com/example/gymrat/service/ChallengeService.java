@@ -6,9 +6,11 @@ import com.example.gymrat.mapper.ChallengeMapper;
 import com.example.gymrat.model.*;
 import com.example.gymrat.repository.*;
 import com.example.gymrat.specification.ChallengeSpecification;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -295,7 +297,7 @@ public class ChallengeService {
 
     //5 all active chellenges which user not beloing
     public Page<AvailableChallengeDTO> getAvailableActiveChallengesForUser(int page, int size, String sortBy, String sortDir,
-                                                                           boolean publicFilter,
+                                                                           Boolean publicFilter,
                                                                            String typeFilter,
                                                                            String categoryFilter) {
         User currentUser = userService.getCurrentUser();
@@ -314,7 +316,10 @@ public class ChallengeService {
                 .and(ChallengeSpecification.typeEquals(typeFilter))
                 .and(ChallengeSpecification.exerciseCategoryEquals(categoryFilter));
 
+
+        System.out.println("wejscie w findall");
         Page<Challenge> result = challengeRepository.findAll(spec, pageable);
+        System.out.println("wyjkscie z find all  " + result.getTotalElements());
         return result.map(challengeMapper::mapToAvailableChallengeDTO);
     }
 
@@ -343,6 +348,7 @@ public class ChallengeService {
                     userHasScore
             );
         }).toList();
+
 
         return new PageImpl<>(history, pageable, finishedChallenges.getTotalElements());
     }
@@ -414,6 +420,22 @@ public class ChallengeService {
                         challengeType.getName(),
                         challengeType.getDescription()
                 )).toList();
+    }
+
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
+    public void updateChallengesStatus() {
+        List<Challenge> expiredChallenges = challengeRepository.findAll(
+                Specification.where(ChallengeSpecification.isActive())
+                        .and(ChallengeSpecification.hasExpiredEndDate())
+        );
+
+        for (Challenge challenge : expiredChallenges) {
+            challenge.setChallengeStatus(ChallengeStatus.FINISHED);
+        }
+
+        challengeRepository.saveAll(expiredChallenges);
     }
 
 

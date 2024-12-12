@@ -88,7 +88,7 @@ public class ChallengeController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(defaultValue = "true") boolean publicFilter,
+            @RequestParam(required = false) Boolean publicFilter,
             @RequestParam(required = false) String typeFilter,
             @RequestParam(required = false) String categoryFilter
     ) {

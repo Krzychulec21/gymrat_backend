@@ -4,6 +4,8 @@ import com.example.gymrat.model.Challenge;
 import com.example.gymrat.model.ChallengeParticipant;
 import com.example.gymrat.model.ChallengeStatus;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -54,10 +56,19 @@ public class ChallengeSpecification {
     public static Specification<Challenge> notBelongsToUser(Long userId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            Join<Challenge, ChallengeParticipant> participants = root.join("challengeParticipants");
-            return cb.notEqual(participants.get("user").get("id"), userId);
+
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<ChallengeParticipant> participants = subquery.from(ChallengeParticipant.class);
+            subquery.select(participants.get("challenge").get("id"))
+                    .where(
+                            cb.equal(participants.get("user").get("id"), userId),
+                            cb.equal(participants.get("challenge").get("id"), root.get("id"))
+                    );
+
+            return cb.not(cb.exists(subquery));
         };
     }
+
 
     public static Specification<Challenge> authorIn(Set<Long> userIds) {
         return (root, query, cb) -> root.get("author").get("id").in(userIds);
@@ -81,8 +92,18 @@ public class ChallengeSpecification {
         };
     }
 
-    public static Specification<Challenge> filterPublic(boolean isPublic) {
-        return isPublic ? isPublic() : isPrivate();
+    public static Specification<Challenge> filterPublic(Boolean isPublic) {
+        return (root, query, criteriaBuilder) -> {
+            if (isPublic == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return isPublic ? criteriaBuilder.isTrue(root.get("isPublic")) : criteriaBuilder.isFalse(root.get("isPublic"));
+        };
+    }
+
+    public static Specification<Challenge> hasExpiredEndDate() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.lessThan(root.get("endDate"), LocalDate.now());
     }
 
 
