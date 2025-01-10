@@ -11,6 +11,7 @@ public record ChallengeResponseDTO(
         LocalDate endDate,
         boolean isPublic,
         int numberOfParticipants,
-        String exerciseName
+        String exerciseName,
+        String author
 ) {
 }

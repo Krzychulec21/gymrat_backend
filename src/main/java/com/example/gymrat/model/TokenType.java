@@ -1,4 +1,4 @@
-package com.example.gymrat.token;
+package com.example.gymrat.model;
 
 public enum TokenType {
     BEARER

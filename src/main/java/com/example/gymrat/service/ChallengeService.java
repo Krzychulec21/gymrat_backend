@@ -125,7 +125,7 @@ public class ChallengeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise with given ID does not exist"));
     }
 
-    //1 - medals
+
     public MedalInfoDTO getUserMedalsForFinishedPublicChallenges() {
         User currentUser = userService.getCurrentUser();
         Specification<Challenge> spec = Specification
@@ -189,7 +189,6 @@ public class ChallengeService {
         return new MedalInfoDTO(gold, silver, bronze);
     }
 
-    //2 - all users ranking
     public Page<UserRankingDTO> getAllUsersRanking(int page, int size, String sortBy, String sortDir) {
         List<User> allUsers = userRepository.findAll();
 
@@ -234,7 +233,7 @@ public class ChallengeService {
         return list;
     }
 
-    //3 - user friends ranking
+
     public Page<UserRankingDTO> getFriendsAndUserRanking(int page, int size, String sortBy, String sortDir) {
         User currentUser = userService.getCurrentUser();
         Set<User> friends = currentUser.getFriends();
@@ -271,7 +270,6 @@ public class ChallengeService {
     }
 
 
-    //4 - active user challenges
     public Page<ActiveChallengeDTO> getActiveChallengesForUser(int page, int size, String sortBy, String sortDir) {
         User currentUser = userService.getCurrentUser();
         Pageable pageable = createPageRequest(page, size, sortBy, sortDir);
@@ -295,7 +293,6 @@ public class ChallengeService {
         );
     }
 
-    //5 all active chellenges which user not beloing
     public Page<AvailableChallengeDTO> getAvailableActiveChallengesForUser(int page, int size, String sortBy, String sortDir,
                                                                            Boolean publicFilter,
                                                                            String typeFilter,

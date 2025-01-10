@@ -4,7 +4,7 @@ import com.example.gymrat.DTO.auth.AuthenticationRequest;
 import com.example.gymrat.DTO.auth.RegisterRequest;
 import com.example.gymrat.DTO.auth.ResetPasswordDTO;
 import com.example.gymrat.DTO.user.EmailDTO;
-import com.example.gymrat.auth.AuthenticationResponse;
+import com.example.gymrat.config.AuthenticationResponse;
 import com.example.gymrat.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

@@ -37,7 +37,8 @@ public class PostService {
     public void createPost(Long workoutId, String description, MultipartFile photo) {
         User user = userService.getCurrentUser();
 
-        WorkoutSession workoutSession = workoutSessionRepository.findById(workoutId).orElseThrow(() -> new ResourceNotFoundException("Workout session with given ID does not exist"));
+        WorkoutSession workoutSession = workoutSessionRepository.findById(workoutId).orElseThrow(
+                () -> new ResourceNotFoundException("Workout session with given ID does not exist"));
 
         Post post = new Post();
         post.setUser(user);
@@ -129,12 +130,6 @@ public class PostService {
     public List<PostResponseDTO> getUserPosts(Long userId) {
         User currentUser = userService.getCurrentUser();
         User profileUser = userService.getUserById(userId);
-
-        boolean isFriend = friendService.areFriends(profileUser.getEmail());
-
-//        if (!isFriend && !currentUser.equals(profileUser)) {
-//            throw new AccessDeniedException("Nie masz dostępu do postów tego użytkownika");
-//        }
 
         List<Post> posts = postRepository.findByUser(profileUser);
 

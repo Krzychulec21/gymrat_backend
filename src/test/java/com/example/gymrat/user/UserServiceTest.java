@@ -1,12 +1,15 @@
-package com.example.gymrat.service;
+package com.example.gymrat.user;
 
 import com.example.gymrat.DTO.auth.AuthenticationRequest;
 import com.example.gymrat.DTO.auth.RegisterRequest;
-import com.example.gymrat.auth.AuthenticationResponse;
+import com.example.gymrat.config.AuthenticationResponse;
 import com.example.gymrat.config.JwtService;
 import com.example.gymrat.exception.user.UserAlreadyExistsException;
 import com.example.gymrat.model.User;
+import com.example.gymrat.repository.PersonalInfoRepository;
 import com.example.gymrat.repository.UserRepository;
+import com.example.gymrat.repository.VerificationTokenRepository;
+import com.example.gymrat.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,12 +37,17 @@ public class UserServiceTest {
     private JwtService jwtService;
     @Mock
     private AuthenticationManager authenticationManager;
+    @Mock
+    private PersonalInfoRepository personalInfoRepository;
     @InjectMocks
     private UserService userService;
 
+    @Mock
+    private VerificationTokenRepository verificationTokenRepository;
+
     @Test
     public void testRegisterNewUserSuccess() {
-        RegisterRequest request = new RegisterRequest("Jan", "Kowalski", "kowal", "kowalski@wp.pl", "password",LocalDate.of(2003, 3, 3));
+        RegisterRequest request = new RegisterRequest("Jan", "Kowalski", "kowal", "kowalski@wp.pl", "password", LocalDate.of(2003, 3, 3));
 
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("hashed_password");
@@ -59,6 +66,7 @@ public class UserServiceTest {
 
         User user = new User();
         user.setEmail("kowalski@wp.pl");
+        user.setEmailVerified(true);
 
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(any(User.class))).thenReturn("mock_jwt_token");

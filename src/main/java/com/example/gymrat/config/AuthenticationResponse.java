@@ -1,4 +1,4 @@
-package com.example.gymrat.auth;
+package com.example.gymrat.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

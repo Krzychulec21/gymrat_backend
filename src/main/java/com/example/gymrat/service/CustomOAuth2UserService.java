@@ -72,7 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (StringUtils.hasText(imageUrl)) {
             URL url = new URL(imageUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0"); // Some servers require a user-agent
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
             try (InputStream in = connection.getInputStream();
                  ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

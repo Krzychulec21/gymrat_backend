@@ -154,18 +154,6 @@ public class TrainingPlanService {
     }
 
 
-//    public Page<TrainingPlanSummaryDTO> getTrainingPlansByUser(Long userId, int page, int size, String sortField, String sortDirection) {
-//        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-//                Sort.by(sortField).descending() : Sort.by(sortField).ascending();
-//
-//        Pageable pageable = PageRequest.of(page, size, sort);
-//
-//        Page<TrainingPlan> trainingPlansPage = trainingPlanRepository.findByAuthorId(userId, pageable);
-//
-//        return trainingPlansPage.map(trainingPlanMapper::mapToSummaryDTO);
-//    }
-    //TODO: check if is it necessary
-
     public void updateTrainingPlan(Long planId, UpdateTrainingPlanDTO dto) {
         User currentUser = userService.getCurrentUser();
 

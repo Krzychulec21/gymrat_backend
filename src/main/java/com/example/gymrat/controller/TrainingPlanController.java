@@ -49,17 +49,6 @@ public class TrainingPlanController {
         );
     }
 
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<Page<TrainingPlanSummaryDTO>> getTrainingPlansByUser(
-//            @PathVariable Long userId,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "name") String sortField,
-//            @RequestParam(defaultValue = "asc") String sortDirection
-//    ) {
-//        return ResponseEntity.ok(trainingPlanService.getTrainingPlansByUser(userId, page, size, sortField, sortDirection));
-//    }
-    //TODO:check if it is necessary
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateTrainingPlan(@PathVariable Long id, @Valid @RequestBody UpdateTrainingPlanDTO dto) {

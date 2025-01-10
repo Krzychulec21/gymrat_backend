@@ -5,7 +5,7 @@ import com.example.gymrat.DTO.auth.AuthenticationRequest;
 import com.example.gymrat.DTO.auth.RegisterRequest;
 import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.RabbitMQ.EmailProducer;
-import com.example.gymrat.auth.AuthenticationResponse;
+import com.example.gymrat.config.AuthenticationResponse;
 import com.example.gymrat.config.JwtService;
 import com.example.gymrat.exception.auth.EmailNotVerifiedException;
 import com.example.gymrat.exception.auth.InvalidCredentialsException;
@@ -67,7 +67,7 @@ public class UserService {
         String token = generateVerificationToken(user);
         String verificationUrl = "http://localhost:8080/api/v1/auth/verify-email?token=" + token;
 
-        emailProducer.sendVerificationEmail(user.getEmail(), verificationUrl);
+        //emailProducer.sendVerificationEmail(user.getEmail(), verificationUrl);
 
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -136,7 +136,6 @@ public class UserService {
                 user.getEmail()
         );
     }
-    //TODO: make toDTO method in userMapper
 
     public UserResponseDTO getUserInfo(Long userId) {
         User user = getUserById(userId);

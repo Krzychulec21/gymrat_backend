@@ -7,8 +7,6 @@ import com.example.gymrat.DTO.workout.WorkoutSessionResponseDTO;
 import com.example.gymrat.exception.ResourceNotFoundException;
 import com.example.gymrat.model.*;
 import com.example.gymrat.repository.ExerciseRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class WorkoutMapper {
 
-    private final ExerciseRepository exerciseRepository; //It's not recommended to use repository in mapper (I should change this)
+    private final ExerciseRepository exerciseRepository;
 
     public WorkoutSession mapToEntity(WorkoutSessionDTO workoutSessionDTO) {
         WorkoutSession workoutSession = new WorkoutSession();

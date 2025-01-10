@@ -3,7 +3,6 @@ package com.example.gymrat.controller;
 import com.example.gymrat.DTO.admin.WarnMessageDTO;
 import com.example.gymrat.DTO.user.UserResponseDTO;
 import com.example.gymrat.service.UserService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/user")
-@Tag(name = "User", description = "Endpoints for user information")
 public class UserController {
 
     private final UserService userService;

@@ -19,7 +19,8 @@ public class ChallengeMapper {
                 challenge.getEndDate(),
                 challenge.isPublic(),
                 challenge.getChallengeParticipants().size(),
-                challenge.getExercise() != null ? challenge.getExercise().getName() : null
+                challenge.getExercise() != null ? challenge.getExercise().getName() : null,
+                challenge.getAuthor().getNickname()
         );
     }
 

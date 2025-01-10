@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Configuration
@@ -57,8 +59,352 @@ public class DatabaseSeeder implements CommandLineRunner {
         addPost();
         addAdmin();
         addChallengeTypes();
+        createChallenges();
     }
 
+    private void createChallenges() {
+        User user = userService.getUserById(1L);
+        User user2 = userService.getUserById(2L);
+        ChallengeType type = challengeTypeRepository.findById(3L).orElseThrow();
+        ChallengeType passa = challengeTypeRepository.findById(1L).orElseThrow();
+        Exercise exercise = exerciseRepository.findById(6L).orElseThrow();
+
+        // Existing finished challenges
+        Challenge challenge = new Challenge();
+        challenge.setPublic(true);
+        challenge.setChallengeStatus(ChallengeStatus.FINISHED);
+        challenge.setChallengeType(type);
+        challenge.setExercise(exercise);
+        challenge.setAuthor(user);
+        challenge.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge.setEndDate(LocalDate.of(2024, 12, 23));
+        challenge.setName("Najsilniejsza klatka");
+
+        ChallengeParticipant participant = new ChallengeParticipant();
+        participant.setUser(user);
+        participant.setChallenge(challenge);
+        participant.setScore(80.0);
+        participant.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 6), LocalTime.of(8, 23, 43)));
+
+        ChallengeParticipant participant2 = new ChallengeParticipant();
+        participant2.setUser(user2);
+        participant2.setChallenge(challenge);
+        participant2.setScore(75.0);
+        participant2.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 4), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list = new ArrayList<>();
+        list.add(participant);
+        list.add(participant2);
+        challenge.setChallengeParticipants(list);
+        challengeRepository.save(challenge);
+
+        ChallengeType newType = challengeTypeRepository.findById(2L).orElseThrow();
+        Exercise newExercise = exerciseRepository.findById(1L).orElseThrow();
+
+        Challenge challenge2 = new Challenge();
+        challenge2.setPublic(true);
+        challenge2.setChallengeStatus(ChallengeStatus.FINISHED);
+        challenge2.setChallengeType(newType);
+        challenge2.setExercise(newExercise);
+        challenge2.setAuthor(user);
+        challenge2.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge2.setEndDate(LocalDate.of(2024, 12, 14));
+        challenge2.setName("Pompowanie nóg");
+
+        ChallengeParticipant participant3 = new ChallengeParticipant();
+        participant3.setUser(user);
+        participant3.setChallenge(challenge2);
+        participant3.setScore(850.0);
+        participant3.setLastUpdated(LocalDateTime.of(2024, 12, 10, 8, 23, 43));
+
+        ChallengeParticipant participant4 = new ChallengeParticipant();
+        participant4.setUser(user2);
+        participant4.setChallenge(challenge2);
+        participant4.setScore(1235.0);
+        participant4.setLastUpdated(LocalDateTime.of(2024, 12, 13, 8, 23, 43));
+
+        List<ChallengeParticipant> participants2 = new ArrayList<>();
+        participants2.add(participant3);
+        participants2.add(participant4);
+        challenge2.setChallengeParticipants(participants2);
+        challengeRepository.save(challenge2);
+
+        // Existing active challenges
+        Challenge challenge3 = new Challenge();
+        challenge3.setPublic(true);
+        challenge3.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge3.setChallengeType(passa);
+        challenge3.setAuthor(user2);
+        challenge3.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge3.setEndDate(LocalDate.of(2025, 1, 14));
+        challenge3.setName("Systematyczność!");
+        challengeRepository.save(challenge3);
+
+        Challenge challenge4 = new Challenge();
+        challenge4.setPublic(false);
+        challenge4.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge4.setChallengeType(newType);
+        challenge4.setExercise(newExercise);
+        challenge4.setAuthor(user2);
+        challenge4.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge4.setEndDate(LocalDate.of(2025, 1, 14));
+        challenge4.setName("Kto najlepszy na ławce?");
+        challengeRepository.save(challenge4);
+
+        Challenge challenge5 = new Challenge();
+        challenge5.setPublic(true);
+        challenge5.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge5.setChallengeType(type);
+        challenge5.setExercise(exercise);
+        challenge5.setAuthor(user);
+        challenge5.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge5.setEndDate(LocalDate.of(2025, 1, 23));
+        challenge5.setName("Najsilniejsza klatka");
+
+        ChallengeParticipant participant7 = new ChallengeParticipant();
+        participant7.setUser(user);
+        participant7.setChallenge(challenge5);
+        participant7.setScore(80.0);
+        participant7.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 6), LocalTime.of(8, 23, 43)));
+
+        ChallengeParticipant participant8 = new ChallengeParticipant();
+        participant8.setUser(user2);
+        participant8.setChallenge(challenge5);
+        participant8.setScore(75.0);
+        participant8.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 4), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list2 = new ArrayList<>();
+        list2.add(participant7);
+        list2.add(participant8);
+        challenge5.setChallengeParticipants(list2);
+        challengeRepository.save(challenge5);
+
+        Challenge challenge6 = new Challenge();
+        challenge6.setPublic(false);
+        challenge6.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge6.setChallengeType(newType);
+        challenge6.setExercise(exercise);
+        challenge6.setAuthor(user);
+        challenge6.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge6.setEndDate(LocalDate.of(2025, 1, 15));
+        challenge6.setName("Największy na siłowni");
+
+        ChallengeParticipant participant9 = new ChallengeParticipant();
+        participant9.setUser(user);
+        participant9.setChallenge(challenge6);
+        participant9.setScore(120.0);
+        participant9.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 27), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list3 = new ArrayList<>();
+        list3.add(participant9);
+        challenge6.setChallengeParticipants(list3);
+        challengeRepository.save(challenge6);
+
+        // 6 Additional active challenges (4 with user1 as author)
+        Challenge challenge7 = new Challenge();
+        challenge7.setPublic(true);
+        challenge7.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge7.setChallengeType(type);
+        challenge7.setExercise(exercise);
+        challenge7.setAuthor(user);
+        challenge7.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge7.setEndDate(LocalDate.of(2025, 2, 1));
+        challenge7.setName("Wytrzymałość na maksa");
+
+        ChallengeParticipant participant10 = new ChallengeParticipant();
+        participant10.setUser(user);
+        participant10.setChallenge(challenge7);
+        participant10.setScore(90.0);
+        participant10.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 10), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list4 = new ArrayList<>();
+        list4.add(participant10);
+        challenge7.setChallengeParticipants(list4);
+        challengeRepository.save(challenge7);
+
+        Challenge challenge8 = new Challenge();
+        challenge8.setPublic(false);
+        challenge8.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge8.setChallengeType(newType);
+        challenge8.setExercise(newExercise);
+        challenge8.setAuthor(user);
+        challenge8.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge8.setEndDate(LocalDate.of(2025, 1, 30));
+        challenge8.setName("Sprint do celu");
+
+        ChallengeParticipant participant11 = new ChallengeParticipant();
+        participant11.setUser(user);
+        participant11.setChallenge(challenge8);
+        participant11.setScore(200.0);
+        participant11.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 15), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list5 = new ArrayList<>();
+        list5.add(participant11);
+        challenge8.setChallengeParticipants(list5);
+        challengeRepository.save(challenge8);
+
+        Challenge challenge9 = new Challenge();
+        challenge9.setPublic(true);
+        challenge9.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge9.setChallengeType(type);
+        challenge9.setExercise(exercise);
+        challenge9.setAuthor(user);
+        challenge9.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge9.setEndDate(LocalDate.of(2025, 2, 10));
+        challenge9.setName("Mocne plecy");
+
+        ChallengeParticipant participant12 = new ChallengeParticipant();
+        participant12.setUser(user);
+        participant12.setChallenge(challenge9);
+        participant12.setScore(110.0);
+        participant12.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 20), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list6 = new ArrayList<>();
+        list6.add(participant12);
+        challenge9.setChallengeParticipants(list6);
+        challengeRepository.save(challenge9);
+
+        Challenge challenge10 = new Challenge();
+        challenge10.setPublic(true);
+        challenge10.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge10.setChallengeType(newType);
+        challenge10.setExercise(newExercise);
+        challenge10.setAuthor(user2);
+        challenge10.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge10.setEndDate(LocalDate.of(2025, 2, 5));
+        challenge10.setName("Biceps na lato");
+
+        ChallengeParticipant participant13 = new ChallengeParticipant();
+        participant13.setUser(user2);
+        participant13.setChallenge(challenge10);
+        participant13.setScore(150.0);
+        participant13.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 18), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list7 = new ArrayList<>();
+        list7.add(participant13);
+        challenge10.setChallengeParticipants(list7);
+        challengeRepository.save(challenge10);
+
+        Challenge challenge11 = new Challenge();
+        challenge11.setPublic(false);
+        challenge11.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge11.setChallengeType(type);
+        challenge11.setExercise(exercise);
+        challenge11.setAuthor(user);
+        challenge11.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge11.setEndDate(LocalDate.of(2025, 2, 15));
+        challenge11.setName("Wyciskanie na maxa");
+
+        ChallengeParticipant participant14 = new ChallengeParticipant();
+        participant14.setUser(user);
+        participant14.setChallenge(challenge11);
+        participant14.setScore(130.0);
+        participant14.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 25), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list8 = new ArrayList<>();
+        list8.add(participant14);
+        challenge11.setChallengeParticipants(list8);
+        challengeRepository.save(challenge11);
+
+        Challenge challenge12 = new Challenge();
+        challenge12.setPublic(true);
+        challenge12.setChallengeStatus(ChallengeStatus.ACTIVE);
+        challenge12.setChallengeType(newType);
+        challenge12.setExercise(newExercise);
+        challenge12.setAuthor(user2);
+        challenge12.setStartDate(LocalDate.of(2024, 12, 2));
+        challenge12.setEndDate(LocalDate.of(2025, 2, 20));
+        challenge12.setName("Cardio maraton");
+
+        ChallengeParticipant participant15 = new ChallengeParticipant();
+        participant15.setUser(user2);
+        participant15.setChallenge(challenge12);
+        participant15.setScore(300.0);
+        participant15.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 12, 22), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list9 = new ArrayList<>();
+        list9.add(participant15);
+        challenge12.setChallengeParticipants(list9);
+        challengeRepository.save(challenge12);
+
+        // 3 Additional finished challenges
+        Challenge challenge13 = new Challenge();
+        challenge13.setPublic(true);
+        challenge13.setChallengeStatus(ChallengeStatus.FINISHED);
+        challenge13.setChallengeType(type);
+        challenge13.setExercise(exercise);
+        challenge13.setAuthor(user);
+        challenge13.setStartDate(LocalDate.of(2024, 11, 1));
+        challenge13.setEndDate(LocalDate.of(2024, 11, 30));
+        challenge13.setName("Wyzwanie listopada");
+
+        ChallengeParticipant participant16 = new ChallengeParticipant();
+        participant16.setUser(user);
+        participant16.setChallenge(challenge13);
+        participant16.setScore(100.0);
+        participant16.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 11, 25), LocalTime.of(8, 23, 43)));
+
+        ChallengeParticipant participant17 = new ChallengeParticipant();
+        participant17.setUser(user2);
+        participant17.setChallenge(challenge13);
+        participant17.setScore(95.0);
+        participant17.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 11, 28), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list10 = new ArrayList<>();
+        list10.add(participant16);
+        list10.add(participant17);
+        challenge13.setChallengeParticipants(list10);
+        challengeRepository.save(challenge13);
+
+        Challenge challenge14 = new Challenge();
+        challenge14.setPublic(false);
+        challenge14.setChallengeStatus(ChallengeStatus.FINISHED);
+        challenge14.setChallengeType(newType);
+        challenge14.setExercise(newExercise);
+        challenge14.setAuthor(user2);
+        challenge14.setStartDate(LocalDate.of(2024, 10, 1));
+        challenge14.setEndDate(LocalDate.of(2024, 10, 31));
+        challenge14.setName("Październikowy sprint");
+
+        ChallengeParticipant participant18 = new ChallengeParticipant();
+        participant18.setUser(user2);
+        participant18.setChallenge(challenge14);
+        participant18.setScore(250.0);
+        participant18.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 10, 30), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list11 = new ArrayList<>();
+        list11.add(participant18);
+        challenge14.setChallengeParticipants(list11);
+        challengeRepository.save(challenge14);
+
+        Challenge challenge15 = new Challenge();
+        challenge15.setPublic(true);
+        challenge15.setChallengeStatus(ChallengeStatus.FINISHED);
+        challenge15.setChallengeType(type);
+        challenge15.setExercise(exercise);
+        challenge15.setAuthor(user);
+        challenge15.setStartDate(LocalDate.of(2024, 9, 1));
+        challenge15.setEndDate(LocalDate.of(2024, 9, 30));
+        challenge15.setName("Wrzesień z wyciskaniem");
+
+        ChallengeParticipant participant19 = new ChallengeParticipant();
+        participant19.setUser(user);
+        participant19.setChallenge(challenge15);
+        participant19.setScore(140.0);
+        participant19.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 9, 28), LocalTime.of(8, 23, 43)));
+
+        ChallengeParticipant participant20 = new ChallengeParticipant();
+        participant20.setUser(user2);
+        participant20.setChallenge(challenge15);
+        participant20.setScore(135.0);
+        participant20.setLastUpdated(LocalDateTime.of(LocalDate.of(2024, 9, 29), LocalTime.of(8, 23, 43)));
+
+        List<ChallengeParticipant> list12 = new ArrayList<>();
+        list12.add(participant19);
+        list12.add(participant20);
+        challenge15.setChallengeParticipants(list12);
+        challengeRepository.save(challenge15);
+    }
 
     private void addChallengeTypes() {
         ChallengeType challengeType = new ChallengeType();
@@ -93,7 +439,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     public void seedUsers() {
         RegisterRequest user1 = new RegisterRequest("Jan", "Kowalski", "kowalczyk", "kowalski@wp.pl", "password", LocalDate.of(2002, 12, 12));
-        RegisterRequest user2 = new RegisterRequest("Michal", "Barylka", "essunia", "nowak@wp.pl", "password", LocalDate.of(1998, 3, 5));
+        RegisterRequest user2 = new RegisterRequest("Michal", "Barylka", "majkel_12", "nowak@wp.pl", "password", LocalDate.of(1998, 3, 5));
         RegisterRequest user3 = new RegisterRequest("John", "Doe", "johndoe", "johndoe@example.com", "password", LocalDate.of(1990, 7, 21));
         RegisterRequest user4 = new RegisterRequest("Anna", "Nowak", "annaN", "anna@example.com", "password", LocalDate.of(1985, 1, 15));
         RegisterRequest user5 = new RegisterRequest("Ewa", "Zalewska", "ewaz", "ewa@wp.pl", "password", LocalDate.of(2000, 11, 30));
@@ -669,7 +1015,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             LocalDate sessionDate = startDate.plusDays(i * 2);
             List<ExerciseSessionDTO> exerciseSessions = new ArrayList<>();
 
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < 5; j++) {
                 String exerciseName = exercises[(i + j) % exercises.length];
                 double weight = baseWeight + ((double) i / 2);
                 int reps = baseReps + (i / 5);
@@ -684,7 +1030,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             workoutSessions.add(new WorkoutSessionDTO(
                     sessionDate,
-                    "Trening " + (i + 1),
+                    "Szybki trening po pracy, bardzo dobre samopoczucie.",
                     exerciseSessions
             ));
         }

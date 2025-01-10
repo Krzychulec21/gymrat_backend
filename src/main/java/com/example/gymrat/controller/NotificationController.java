@@ -2,7 +2,6 @@ package com.example.gymrat.controller;
 
 import com.example.gymrat.DTO.notification.NotificationDTO;
 import com.example.gymrat.service.NotificationService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +12,6 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/notifications")
-@Tag(name = "Notifications", description = "Endpoints for managing notifications")
 public class NotificationController {
     private final NotificationService notificationService;
 

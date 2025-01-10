@@ -1,7 +1,6 @@
 package com.example.gymrat.DTO.friends;
 
 import com.example.gymrat.model.RequestStatus;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 
 public record PendingFriendRequestDTO(
@@ -17,4 +16,5 @@ public record PendingFriendRequestDTO(
         String receiverEmail,
 
         RequestStatus status
-) {}
+) {
+}
