@@ -32,7 +32,6 @@ public class PostService {
     private final PostReactionRepository postReactionRepository;
     private final AppProperties appProperties;
     private final NotificationService notificationService;
-    private final FriendService friendService;
 
     public void createPost(Long workoutId, String description, MultipartFile photo) {
         User user = userService.getCurrentUser();

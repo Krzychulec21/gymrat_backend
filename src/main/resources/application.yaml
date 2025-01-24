@@ -25,7 +25,7 @@ spring:
             client-name: Google
   web:
     resources:
-      static-locations: file:///C:/Users/Chris/Desktop/inzynierka/gymrat/uploads/
+      static-locations: file:uploads/
       cache:
         period: 3600
 
