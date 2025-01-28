@@ -1159,9 +1159,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 
         String[] paths = {
-                "http://localhost:8080/api/v1/posts/images/1732189061756_biceps.jpg",
-                "http://localhost:8080/api/v1/posts/images/1732189061854_plecy.jpg",
-                "http://localhost:8080/api/v1/posts/images/1732189061891_klata.jpg"
+                "http://localhost:8080/api/v1/posts/images/example_photo.jpg",
+                "http://localhost:8080/api/v1/posts/images/example_photo.jpg",
+                "http://localhost:8080/api/v1/posts/images/example_photo.jpg",
         };
 
         for (int i = 0; i < 3; i++) {

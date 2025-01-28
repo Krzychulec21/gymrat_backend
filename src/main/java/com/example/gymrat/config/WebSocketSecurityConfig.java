@@ -44,7 +44,6 @@ public class WebSocketSecurityConfig implements HandshakeInterceptor {
 
         if (token != null) {
             String userEmail = jwtService.extractEmail(token);
-            System.out.println("problem z emailem: " + userEmail);
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(token, userDetails)) {
                 Authentication auth = new UsernamePasswordAuthenticationToken(

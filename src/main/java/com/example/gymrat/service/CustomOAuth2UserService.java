@@ -57,7 +57,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             personalInfo = new PersonalInfo();
             personalInfo.setUser(user);
         }
-        System.out.println("po");
         personalInfo.setAvatar(avatarBytes);
         personalInfoRepository.save(personalInfo);
 

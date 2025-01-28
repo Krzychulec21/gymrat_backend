@@ -87,6 +87,7 @@ public class FriendService {
             LocalDateTime latestMessageTimestamp = (LocalDateTime) obj[1];
             return new FriendResponseDTO(
                     friend.getId(),
+                    friend.getId(),
                     friend.getFirstName(),
                     friend.getLastName(),
                     friend.getEmail(),

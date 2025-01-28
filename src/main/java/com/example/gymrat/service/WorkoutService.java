@@ -39,7 +39,6 @@ public class WorkoutService {
 
     public Long saveWorkout(WorkoutSessionDTO workoutSessionDTO) {
         WorkoutSession workoutSession = workoutMapper.mapToEntity(workoutSessionDTO);
-        System.out.println("ciezar " + workoutSessionDTO.exerciseSessions().get(0).sets().get(0).weight());
         User user = userService.getCurrentUser();
         workoutSession.setUser(user);
 
@@ -54,7 +53,6 @@ public class WorkoutService {
     public Integer getNumberOfUserWorkouts() {
         User user = userService.getCurrentUser();
         int count = workoutSessionRepository.countAllByUserId(user.getId());
-        System.out.println("liczba treningow" + count);
         return count;
     }
 

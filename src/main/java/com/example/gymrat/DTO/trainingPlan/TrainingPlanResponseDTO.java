@@ -9,6 +9,7 @@ public record TrainingPlanResponseDTO(
         Long id,
         String name,
         String description,
+        Long authorId,
         String authorNickname,
         Integer difficultyLevel,
         Set<CategoryName> categories,

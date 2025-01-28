@@ -2,7 +2,10 @@ package com.example.gymrat.mapper;
 
 import com.example.gymrat.DTO.trainingPlan.*;
 import com.example.gymrat.exception.ResourceNotFoundException;
-import com.example.gymrat.model.*;
+import com.example.gymrat.model.CategoryName;
+import com.example.gymrat.model.Exercise;
+import com.example.gymrat.model.ExerciseInPlan;
+import com.example.gymrat.model.TrainingPlan;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -55,6 +58,7 @@ public class TrainingPlanMapper {
                 trainingPlan.getId(),
                 trainingPlan.getName(),
                 trainingPlan.getDescription(),
+                trainingPlan.getAuthor().getId(),
                 trainingPlan.getAuthor().getNickname(),
                 trainingPlan.getDifficultyLevel(),
                 trainingPlan.getCategories(),

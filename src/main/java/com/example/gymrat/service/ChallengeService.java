@@ -32,7 +32,6 @@ public class ChallengeService {
     public ChallengeResponseDTO saveChallenge(ChallengeRequestDTO dto) {
         User currentUser = userService.getCurrentUser();
         ChallengeType challengeType = getChallengeTypeById(dto.typeId());
-        System.out.println("weszlo w save challenge" + dto.exerciseId());
         Challenge challenge = new Challenge();
         challenge.setName(dto.name());
         challenge.setChallengeType(challengeType);
@@ -314,9 +313,7 @@ public class ChallengeService {
                 .and(ChallengeSpecification.exerciseCategoryEquals(categoryFilter));
 
 
-        System.out.println("wejscie w findall");
         Page<Challenge> result = challengeRepository.findAll(spec, pageable);
-        System.out.println("wyjkscie z find all  " + result.getTotalElements());
         return result.map(challengeMapper::mapToAvailableChallengeDTO);
     }
 

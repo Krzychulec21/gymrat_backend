@@ -216,7 +216,6 @@ public class UserService {
 
     public void sendWarnToUser(Long userId, WarnMessageDTO dto) {
         User user = getUserById(userId);
-        System.out.println("otrzymane descriptin" + dto);
         notificationService.sendNotification(user, null, dto.description(), NotificationType.WARN, null);
     }
 

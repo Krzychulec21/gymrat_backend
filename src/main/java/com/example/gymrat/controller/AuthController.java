@@ -31,7 +31,6 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody EmailDTO emailDTO) {
-        System.out.println("otryzmano email: " + emailDTO.email());
         userService.sendPasswordResetLink(emailDTO.email());
         return ResponseEntity.ok("Password reset link sent to your email");
     }

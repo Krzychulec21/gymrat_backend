@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record FriendResponseDTO(
 
         Long id,
+        Long userId,
         String firstName,
         String lastName,
         String email,
