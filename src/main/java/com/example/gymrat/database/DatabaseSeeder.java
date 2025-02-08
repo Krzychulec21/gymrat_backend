@@ -136,7 +136,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         challenge3.setChallengeType(passa);
         challenge3.setAuthor(user2);
         challenge3.setStartDate(LocalDate.of(2024, 12, 2));
-        challenge3.setEndDate(LocalDate.of(2025, 1, 14));
+        challenge3.setEndDate(LocalDate.of(2025, 2, 14));
         challenge3.setName("Systematyczność!");
         challengeRepository.save(challenge3);
 
@@ -147,7 +147,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         challenge4.setExercise(newExercise);
         challenge4.setAuthor(user2);
         challenge4.setStartDate(LocalDate.of(2024, 12, 2));
-        challenge4.setEndDate(LocalDate.of(2025, 1, 14));
+        challenge4.setEndDate(LocalDate.of(2025, 2, 14));
         challenge4.setName("Kto najlepszy na ławce?");
         challengeRepository.save(challenge4);
 
@@ -158,7 +158,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         challenge5.setExercise(exercise);
         challenge5.setAuthor(user);
         challenge5.setStartDate(LocalDate.of(2024, 12, 2));
-        challenge5.setEndDate(LocalDate.of(2025, 1, 23));
+        challenge5.setEndDate(LocalDate.of(2025, 2, 23));
         challenge5.setName("Najsilniejsza klatka");
 
         ChallengeParticipant participant7 = new ChallengeParticipant();
@@ -186,7 +186,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         challenge6.setExercise(exercise);
         challenge6.setAuthor(user);
         challenge6.setStartDate(LocalDate.of(2024, 12, 2));
-        challenge6.setEndDate(LocalDate.of(2025, 1, 15));
+        challenge6.setEndDate(LocalDate.of(2025, 2, 15));
         challenge6.setName("Największy na siłowni");
 
         ChallengeParticipant participant9 = new ChallengeParticipant();
@@ -208,7 +208,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         challenge7.setExercise(exercise);
         challenge7.setAuthor(user);
         challenge7.setStartDate(LocalDate.of(2024, 12, 2));
-        challenge7.setEndDate(LocalDate.of(2025, 2, 1));
+        challenge7.setEndDate(LocalDate.of(2025, 2, 12));
         challenge7.setName("Wytrzymałość na maksa");
 
         ChallengeParticipant participant10 = new ChallengeParticipant();
