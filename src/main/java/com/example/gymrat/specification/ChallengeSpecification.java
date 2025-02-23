@@ -46,17 +46,15 @@ public class ChallengeSpecification {
 
     public static Specification<Challenge> belongsToUser(Long userId) {
         return (root, query, cb) -> {
-            query.distinct(true);
             Join<Challenge, ChallengeParticipant> participants = root.join("challengeParticipants");
             return cb.equal(participants.get("user").get("id"), userId);
         };
     }
 
 
+
     public static Specification<Challenge> notBelongsToUser(Long userId) {
         return (root, query, cb) -> {
-            query.distinct(true);
-
             Subquery<Long> subquery = query.subquery(Long.class);
             Root<ChallengeParticipant> participants = subquery.from(ChallengeParticipant.class);
             subquery.select(participants.get("challenge").get("id"))
@@ -68,6 +66,7 @@ public class ChallengeSpecification {
             return cb.not(cb.exists(subquery));
         };
     }
+
 
 
     public static Specification<Challenge> authorIn(Set<Long> userIds) {

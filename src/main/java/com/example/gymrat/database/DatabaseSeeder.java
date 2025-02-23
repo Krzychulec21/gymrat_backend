@@ -54,7 +54,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         addFriends();
         addExercises();
         addWorkoutSession();
-        addTrainingPlans();
+//        addTrainingPlans();
         addPersonalInfo();
         addPost();
         addAdmin();
